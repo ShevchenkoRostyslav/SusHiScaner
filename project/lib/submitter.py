@@ -6,6 +6,11 @@ Class for submission jobs to naf/lxplus/shell
 '''
 
 class submitter(object):
+    def __init__(self,type = '',command = '',parameters = ''):
+        self.type = type
+        self._command = command
+        self._parameters = parameters
+    
     def choose_cluster(type):
         if type == 'naf':
             return naf()
@@ -16,30 +21,28 @@ class submitter(object):
         assert 0, 'Wrong cluster selected: ' + type
     choose_cluster = staticmethod(choose_cluster)
             
-        
-    def command(self):
-        return str('')
-    
     def addParameters(self,parameters):
-        self.parameters = parameters
-    
+        self._parameters += parameters
+        
 class naf(submitter):
     def __init__(self):
-        self.name = 'naf'
+        submitter.__init__(self,'naf','qsub')
     
-    def command(self):
-        return 'qsub ' + self.parameters
+    def __str__(self):
+        return 'Naf: ' + self._command + self._parameters
+    
 
 class lxplus(submitter):
     def __init__(self):
-        self.name = 'lxplus'
+        self.type = 'lxplus'
         
-    def command(self):
-        return 'bsub ' + self.parameters
+    def __str__(self):
+        return 'lxplus used for submission'
         
 class shell(submitter):
     def __init__(self):
-        self.name = 'shell'
+        self.type = 'shell'
 
-        
+    def __str__(self):
+        return 'shell used for submission'
     
