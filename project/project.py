@@ -2,7 +2,6 @@
 import logging
 import sys
 sys.path.insert(0,'../project')
-# from lib.parseInput import *
 from lib.parseInput import *
 
 if __name__ == '__main__':
