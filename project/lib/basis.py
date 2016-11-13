@@ -27,9 +27,9 @@ class Basis(object):
 
     ''''''
     def __str__(self):
-        return 'Basis container, with: \n higgsType = ' + self.iput['higgsType'] + \
-        ' thdmType = ' + self.iput['thdmType'] + ' m12 = ' + self.iput['m12'] + ' tanBeta = ' + \
-        self.iput['tanBeta'] + ' ' + self.iput['basis']
+        return 'Basis container, with: \n higgsType = ' + str(self.iput['higgsType']) + \
+        ' thdmType = ' + str(self.iput['thdmType']) + ' m12 = ' + str(self.iput['m12']) + ' tanBeta = ' + \
+        str(self.iput['tanBeta']) + ' ' + str(self.iput['basis'])
 
     def choose_basis(iput = None):
         iput = iput or self.iput
@@ -39,13 +39,16 @@ class Basis(object):
         elif basis == 'lambdabasis':
             return LambdaBasis(iput)
         else:
-            raise AttributeError('No basis called: ' + basis + 'exists.')
+            raise AttributeError('No basis called: ' + str(basis) + 'exists.')
             return
     choose_basis = staticmethod(choose_basis)
 
 class PhysicalBasis(Basis):
+    '''Constructor from physical basis'''
     def __init__(self, higgsType, thdmType, m12, tanBeta, mh, mH, mA, mC, sinB_A, lambda6, lambda7):
-        super(PhysicalBasis, self).__init__(iput)
+        self.iput = {'basis' : 'physicalbasis','m12' : m12,'higgsType' : higgsType,'thdmType' : thdmType,'tanBeta' : tanBeta ,\
+                'mh' : mh,'mH' : mH,'mA' : mA,'mC' : mC,'sinB_A' : sinB_A,'lambda6' : lambda6,'lambda7' : lambda7}
+        super(PhysicalBasis,self).__init__(iput)
         self.basis = 'physicalbasis'
         self.mh = mh
         self.mH = mH
@@ -57,7 +60,8 @@ class PhysicalBasis(Basis):
 
     '''Constructor from dictionary'''
     def __init__(self,iput):
-        super(PhysicalBasis, self).__init__(iput)
+        super(PhysicalBasis,self).__init__(iput)
+        self.iput = iput
         self.basis = 'physicalbasis'
         self.mh = iput['mh']
         self.mH = iput['mH']
@@ -67,10 +71,10 @@ class PhysicalBasis(Basis):
         self.lambda6 = iput['lambda6']
         self.lambda7 = iput['lambda7']
 
-
     def __str__(self):
-        basis_out = super().__str__()
-        phys_out  = 'mh = ' + mh
+        basis_out = super(PhysicalBasis,self).__str__()
+        phys_out  = 'mh = ' + str(self.mh) + ' mH = ' + str(self.mH) + ' mA = ' + str(self.mA) + ' mC = ' + str(self.mC) + \
+        'sinB_A = ' + str(self.sinB_A) + ' lambda6 = ' + str(self.lambda6) + ' lambda7 = ' + str(self.lambda7)
         return basis_out + '\n' + phys_out
 
 
@@ -78,4 +82,31 @@ class PhysicalBasis(Basis):
 class LambdaBasis(Basis):
     def __init__(self, higgsType, thdmType, m12, tanBeta, lambda1, lambda2, lambda3, lambda4, lambda5, lambda6, lambda7):
         self.basis = 'lambdabasis'
-        super(LambdaBasis, self).__init__()
+        iput = {'basis' : 'lambdabasis','m12' : m12,'higgsType' : higgsType,'thdmType' : thdmType,'tanBeta' : tanBeta ,\
+                'lambda1' : lambda1,'lambda2' : lambda2,'lambda3' : lambda3,'lambda4' : lambda4,'lambda5' : lambda5,'lambda6' : lambda6,'lambda7' : lambda7}
+        super(LambdaBasis, self).__init__(iput)
+        self.lambda1 = lambda1
+        self.lambda2 = lambda2
+        self.lambda3 = lambda3
+        self.lambda4 = lambda4
+        self.lambda5 = lambda5
+        self.lambda6 = lambda6
+        self.lambda7 = lambda7
+
+    '''Constructor from dictionary'''
+    def __init__(self,iput):
+        super(LambdaBasis,self).__init__(iput)
+        self.basis = 'lambdabasis'
+        self.lambda1 = iput['lambda1']
+        self.lambda2 = iput['lambda2']
+        self.lambda3 = iput['lambda3']
+        self.lambda4 = iput['lambda4']
+        self.lambda5 = iput['lambda5']
+        self.lambda6 = iput['lambda6']
+        self.lambda7 = iput['lambda7']
+
+    def __str__(self):
+        basis_out = super(LambdaBasis,self).__str__()
+        phys_out  = 'lambda1 = ' + str(self.lambda1) + ' lambda2 = ' + str(self.lambda2) + ' lambda3 = ' + str(self.lambda3) + ' lambda4 = ' + str(self.lambda4) + \
+        'lambda5 = ' + str(self.lambda5) + ' lambda6 = ' + str(self.lambda6) + ' lambda7 = ' + str(self.lambda7)
+        return basis_out + '\n' + phys_out

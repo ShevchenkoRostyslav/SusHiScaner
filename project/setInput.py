@@ -1,6 +1,9 @@
 #!/usr/bin/python
 import logging
 import math
+import sys
+sys.path.insert(0,'../project')
+from lib.basis import *
 
 #Method used to setup arrays of input vars
 #Also parameters can be setupped via functions
@@ -52,36 +55,26 @@ def setInputs():
     mA = []
     #m12 Parameter
     m12 = []
+
+    basis = []
     for h in mh:
         for H in mH:
             for b_a in sinB_As:
-                #A masses
-                mA.append(getMA_Hhh(h, H, b_a))
-
                 for t_b in tanBetas:
-                    #m12 Parameter
-                    m12.append(getm12_Hhh(h,H,b_a,t_b,0))
+                    for ht in higgsTypes:
+                        #A masses
+                        A = getMA_Hhh(h, H, b_a)
+                        mA.append(A)
+                        # Charge H masses asuume to be equal to A
+                        C = A
+                        #m12 Parameter
+                        m_12 = getm12_Hhh(h,H,b_a,t_b,0)
+                        m12.append(m_12)
+                        # Append valeus to Basis class
+                        dic = {'basis':'physicalbasis','mh':h,'mH':H,'mA':A,'m12':m_12,'mC':A,'tanBeta':t_b,'thdmType':thdmTypes[0],\
+                            'higgsType':ht,'lambda6':0,'lambda7':0,'sinB_A':b_a}
+                        bas = Basis.choose_basis(dic)
+                        basis.append(bas)
 
-    #mC mass
-    mC = mA
-    #Another basis
-    lambda1 = []
-    lambda2 = []
-    lambda3 = []
-    lambda4 = []
-    lambda5 = []
-    lambda6 = []
-    lambda7 = []
 
-    #used basis
-    basis = 'physicalbasis'
-
-    #return list
-    iput = {'basis':basis,
-            'mh':mh,'mH':mH,'mA':mA,'m12':m12,'mC':mC,
-            'tanBetas':tanBetas,
-            'thdmTypes':thdmTypes,'sinB_As':sinB_As,
-            'higgsTypes':higgsTypes,
-            'lambda6':lambda6, 'lambda7':lambda7}
-
-    return iput
+    return basis
