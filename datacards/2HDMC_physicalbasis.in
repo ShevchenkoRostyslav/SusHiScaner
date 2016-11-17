@@ -1,6 +1,6 @@
 Block SUSHI
   1   2		# model: 0 = SM, 1 = MSSM, 2 = 2HDM
-  2   HIGGSTYPE        # 11 = light Higgs (h), 12 = heavy Higgs (H), 21 = pseudoscalar (A)
+  2   HIGGSTYPE # 11 = light Higgs (h), 12 = heavy Higgs (H), 21 = pseudoscalar (A)
   3   0		# collider: 0 = p-p, 1 = p-pbar
   4   13000.d0	# center-of-mass energy in GeV
   5   2		# order ggh: -1 = off, 0 = LO, 1 = NLO, 2 = NNLO
@@ -12,15 +12,15 @@ Block SUSHI
 Block 2HDMC 	# 2HDMC arXiv:0902.0851
   1   2 	# 2HDMC key, 1=lambda basis, 2=physical basis, 3=H2 basis
   2   THDMTYPE 	# 2HDM version type: (1=Type I,2=Type II,3=Flipped,4=Lepton Specific) 
-  3   TANBETA 		# tan(beta)
-  4   M12 		# m12
-  21  1.25e+02 	# mh
-  22  HMASS 	# mH
+  3   TANBETA   # tan(beta)
+  4   M12 	# m12
+  21  HLOWM 	# mh
+  22  HCAPM 	# mH
   23  HAMASS 	# mA
   24  HCMASS 	# mC
   25  SINB_A	# sin(beta-alpha)
-  26  0.d0 		# lambda6
-  27  0.d0 		# lambda7
+  26  L6 		# lambda6
+  27  L7 		# lambda7
 Block SMINPUTS		# Standard Model inputs
   1   1.27934000e+02	# alpha_em^(-1)(MZ) SM MSbar
   2   1.16637000e-05	# G_Fermi
