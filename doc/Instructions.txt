@@ -1,0 +1,63 @@
+#Brief HOWTO install and setup SusHi and co.
+#Provided by Stefano Lacaprara  <lacaprara@pd.infn.it>  INFN Padova
+
+#Intallation:
+#============
+
+#inside CMSSW 766
+
+wget ftp://ftp.gnu.org/gnu/gsl/gsl-2.2.tar.gz
+tar xzvf gsl-2.2.tar.gz
+cd gsl-2.2
+./configure --prefix=/lustre/cmswork/lacaprar/CMSSW_7_6_6/src/local
+make
+make install
+
+wget http://www.hepforge.org/archive/2hdmc/2HDMC-1.7.0.tar.gz
+tar xzvf 2HDMC-1.7.0.tar.gz
+cd 2HDMC-1.7.0
+#Edit Makefile and add
+CFLAGS+=-I/lustre/cmswork/lacaprar/CMSSW_7_6_6/src/2HDM/local/include
+CFLAGS+=-L/lustre/cmswork/lacaprar/CMSSW_7_6_6/src/2HDM/local/lib
+
+make
+#this produces a set of executable (as ./Demo) that you can use
+
+wget http://www.hepforge.org/archive/lhapdf/LHAPDF-6.1.6.tar.gz
+tar xsvf LHAPDF-6.1.6.tar.gz
+export BOOST_ROOT=/cvmfs/cms.cern.ch/slc6_amd64_gcc493/external/boost/1.57.0-kpegke/
+# (boost base dir can be found on /lustre/cmswork/lacaprar/CMSSW_7_6_6/config/toolbox/slc6_amd64_gcc493/tools/selected/boost.xml )
+./configure --prefix=/lustre/cmswork/lacaprar/CMSSW_7_6_6/src/local --disable-python
+mkdir /lustre/cmswork/lacaprar/CMSSW_7_6_6/src/local/share/LHAPDF/
+wget http://www.hepforge.org/archive/lhapdf/pdfsets/6.1/CT10nlo.tar.gz
+tar xzvf CT10nlo.tar.gz -C /lustre/cmswork/lacaprar/CMSSW_7_6_6/src/local/share/LHAPDF/
+make; make install
+
+wget http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-2.12.0.tar.gz
+tar xzvf FeynHiggs-2.10.0.tar.gz
+cd FeynHiggs-2.12.0/
+./configure --prefix=/lustre/cmswork/lacaprar/CMSSW_7_6_6/src/local
+make install
+
+wget http://www.hepforge.org/archive/sushi/SusHi-1.6.1.tar.gz
+tar xzvf  SusHi-1.6.1.tar.gz
+cd SusHi-1.6.1
+./configure --prefix=/lustre/cmswork/lacaprar/CMSSW_7_6_6/src/local
+edit Makefile:
+LHAPATH = 
+LHAPDF_CONFIG=./lhapdf-config
+
+ln -s ../local/bin/lhapdf-config .
+
+# edit makefile
+FHPATH = ../FeynHiggs-2.12.0
+FHVERSION = 2.12.0
+
+2HDMCPATH = ../2HDMC-1.7.0
+2HDMCVERSION = 1.7.0
+
+STDLIB = -L/cvmfs/cms.cern.ch/slc6_amd64_gcc493/external/gsl/1.10/lib
+
+make
+make predef=FH
+make predef=2HDMC
