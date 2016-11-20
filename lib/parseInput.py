@@ -84,6 +84,8 @@ def ParseOption():
     args = parser.parse_args()
     # convert output_dir to absolute path
     args.output_dir = os.path.abspath(os.path.join(os.getcwd(), args.output_dir))
+    # Add folder to the output
+    args.output_dir += '/sushi_out/'
 
     return args
 

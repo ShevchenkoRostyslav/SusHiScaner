@@ -100,6 +100,12 @@ class submitter(object):
             raise AttributeError("ERROR: No .csh file found at " + os.getcwd())
         command = './sushi ' + card_name + '.in ' + card_name + '.out' + ' > ' + card_name + '.log'
         cshFile = self.UpdateSubmissionCsh(command, cshFile)
+        # Cat 2HDMC output in the same .out
+        command2 = 'cat 2HDMC.out >> ' + card_name + '.out'
+        cshFile = self.UpdateSubmissionCsh(command2, cshFile)
+        # Delete output of the 2HDMC:
+        command3 = 'rm 2HDMC.out'
+        cshFile = self.UpdateSubmissionCsh(command3, cshFile)
         # Get back to the parent directory:
         os.chdir(root_dir)
 
@@ -121,12 +127,11 @@ class submitter(object):
         # Change directory
         os.chdir('job_' + str(object=job))
         thisCsh = 'job_' + str(job) + '.csh'
-        command1 = 'tar -cvzf out_' + str(job) + '.tar.gz *.out'
+        command1 = 'tar -cvzf out_job_' + str(job) + '.tar.gz *.out'
         thisCsh = self.UpdateSubmissionCsh(command1, thisCsh)
         print 'submitting job',str(job)
 #     cmd = 'bsub -q ' + queue + ' ' + thisCsh
         cmd = self._command + ' ' + self._parameters + ' ' + thisCsh
-        print cmd
         call(cmd,shell=True)
         # self.processCmd(cmd)
         # Get back to the parent directory:
@@ -196,7 +201,7 @@ class submitter(object):
         # Redefine the name of the input datacard and output
         # tempInputName = 'type' + str(int(thdmType)) + '_Htype_' + str(int(higgsType)) + '_tanB' + str(round(tanBeta,2)) + '_m12_' + str(round(m12,2)) \
         # + '_mh' + str(round(mh,2)) + '_mH' + str(round(mH,2)) + '_mA' + str(round(mA,2)) + '_mC' + str(round(mC,2)) + '_sinBA' + str(round(sinB_A,2)) + '_L6' + str(round(lambda6,2)) + '_L7' + str(round(lambda7,2));
-        tempInputName = str(object=uuid.uuid1()) #Couldn't use meaningfull name because of limitation on the string size fomr sushi side
+        tempInputName = 'type' + str(int(thdmType)) + '_Htype_' + str(int(higgsType)) + '_' + str(object=uuid.uuid1()) #Couldn't use meaningfull name because of limitation on the string size fomr sushi side
         tempInput = tempInputName + '.in';
 
         # Check whether input datacard exists:
@@ -241,7 +246,7 @@ class submitter(object):
         # Redefine the name of the input datacard and output
         # tempInputName = 'type' + str(int(thdmType)) + '_Htype_' + str(int(higgsType)) + '_tanB' + str(round(tanBeta,2)) + '_m12' + str(round(m12,2)) \
         # + '_L1' + str(round(lambda1,2)) + '_L2' + str(round(lambda2,2)) + '_L3' + str(round(lambda3,2)) + '_L4' + str(round(lambda4,2)) + '_L5' + str(round(lambda5,2)) + '_L6' + str(round(lambda6,2)) + '_L7' + str(round(lambda7,2))
-        tempInputName = str(object=uuid.uuid1())
+        tempInputName = 'type' + str(int(thdmType)) + '_Htype_' + str(int(higgsType)) + '_' + str(object=uuid.uuid1())
         tempInput = tempInputName + '.in';
 
         # Check whether input datacard exists:
