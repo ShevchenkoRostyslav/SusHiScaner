@@ -1,9 +1,9 @@
 import sys
 
-def differentVals(vals,name):
+def differentVals(vals,name,precision = 2):
     unique = []
     for v in vals:
-        if round(v.iput[name],2) not in unique: unique.append(round(v.iput[name],2))
+        if round(v.iput[name],precision) not in unique: unique.append(round(v.iput[name],precision))
     return unique
 
 def printInput(basis_ar,iput):
@@ -33,7 +33,7 @@ def printInput(basis_ar,iput):
         print 'mH: ', differentVals(basis_ar, 'mH')
         print 'mA: ', differentVals(basis_ar, 'mA')
         print 'mC: ', differentVals(basis_ar, 'mC')
-        print 'sin(beta-alpha): ', differentVals(basis_ar, 'sinB_A')
+        print 'sin(beta-alpha): ', differentVals(basis_ar, 'sinB_A',3)
         print 'lambda6: ', differentVals(basis_ar, 'lambda6')
         print 'lambda7: ', differentVals(basis_ar, 'lambda7')
     # decide whether u want to continue or not
