@@ -34,6 +34,8 @@ def makeReadableGrid(output_dir):
     types2HDM = ['type1', 'type2','type3','type4']
     # create directory for txt files:
     txtDir = MakeCleanDir(output_dir + '/txtFiles/')
+    # and for root files
+    rootDir = MakeCleanDir(output_dir + '/rootFiles/')
     for higgs in higgsType:
         for type2HDM in types2HDM:
-            getInfoFromSusHiOutput(output_dir + '/Untar_files/',txtDir,type2HDM,higgs)
+            getInfoFromSusHiOutput(output_dir + '/Untar_files/',output_dir,type2HDM,higgs)
