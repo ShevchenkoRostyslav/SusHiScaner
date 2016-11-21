@@ -1,11 +1,15 @@
 # SusHiScaner
 Author:     "Rostyslav Shevchenko"
+
 Credits:    "Hualin Mei and Stefano Lacaprara"
+
 Version:    "1.0.0"
+
 Maintainer: "Rostyslav Shevchenko"
-Email:      "rostyslav.shevchenko@desy.de"
-            "shevchenko.rostislav@gmail.com"
-            "rostyslav.shevchenko@cern.ch"
+
+Email:      "rostyslav.shevchenko@desy.de" \n
+            "shevchenko.rostislav@gmail.com" \n
+            "rostyslav.shevchenko@cern.ch" \n
 Status:     "Beta-test"
 
 SusHiScaner is designed for comfortable reading and processing of SusHi and
