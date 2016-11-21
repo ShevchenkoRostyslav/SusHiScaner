@@ -66,6 +66,20 @@ def UseThisFile(fileName, type2hdm, higgs):
 
     return True
 
+def GetLineWithOutput(fileName,dict_scan,dict_sushi,dict_2hdmc,h1,h2):
+    """Method that returnes single line with combined output from SusHi and 2HDMC.
+
+    """
+    # First get values of pois
+    pois = [GetFromSushiOut(fileName, dict_scan[k]) for k in dict_scan]
+    # Sushi ouput
+    fromSushi = [GetFromSushiOut(fileName, dict_sushi[k]) for k in dict_sushi]
+    # 2HDMC output
+    from2hdmc = [GetBRFrom2HDMCOut(fileName, h1,  h2,  dict_2hdmc[k]) for k in dict_2hdmc]
+    # Make a single line in the future output .txt file
+    line = ' '.join(pois + fromSushi + from2hdmc)
+    return line
+
 # Main method to parse output of the SusHi to create a grid
 def getInfoFromSusHiOutput(input_dir,output_dir,type2HDM,higgs):
     # get information from dictionary associated to higgs:
@@ -96,15 +110,8 @@ def getInfoFromSusHiOutput(input_dir,output_dir,type2HDM,higgs):
             # if not type2HDM == 'type' + GetFromSushiOut(file, '2HDM type'): continue
             # if not higgs == 'extra' and not xsHiggs == 'xs' + GetFromSushiOut(file, '11=h, 12=H, 21=A'): continue
             if not UseThisFile(file, type2HDM, higgs): continue
-            # if not UseThisFile(file, type2HDM, xsHiggs) and not higgs == 'extra': continue
-            # First get values of pois
-            pois = [GetFromSushiOut(file, dict_scan[k]) for k in dict_scan]
-            # Sushi ouput
-            fromSushi = [GetFromSushiOut(file, dict_sushi[k]) for k in dict_sushi]
-            # 2HDMC output
-            from2hdmc = [GetBRFrom2HDMCOut(file, h1,  h2,  dict_2hdmc[k]) for k in dict_2hdmc]
-            # Make a single line in the future output .txt file
-            line = ' '.join(pois + fromSushi + from2hdmc)
+            # Get output from SusHi and 2HDMC
+            line = GetLineWithOutput(file,dict_scan,dict_sushi,dict_2hdmc,h1,h2)
             # Save the output
             txtName = type2HDM + '_m' + higgs + '.txt'
             tmpTxt = output_dir + '/' + txtName
