@@ -49,14 +49,14 @@ Help menu:
 
 - using lxplus. Input parameters should be specified in setup.py,
   while number of points per job should be specified interactively as well as
-  queue
+  queue:
 
     python project.py lxplus -h/--help
 
 - for DESY (naf-cms) users - naf can be used as well, with the same strategy as
   lxplus
 
-2. To produce .txt and .root file - postprocessor.py should be used
+2. To produce .txt and .root file - postprocessor.py should be used:
 
     python postprocessor.py -h/--help
 
