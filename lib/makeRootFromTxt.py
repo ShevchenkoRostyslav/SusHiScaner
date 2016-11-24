@@ -44,6 +44,8 @@ def MakeTTree(dict_scan,dict_sushi,dict_2hdmc):
     CreateTBranch(dict_sushi, tree)
     # Iterate over the 2HDMC output
     CreateTBranch(dict_2hdmc, tree)
+    # More advanced implementation to test:
+    # [CreateTBranch(d,tree) for d in (dict_scan,dict_sushi,dict_sushi)]
 
     return tree
 
