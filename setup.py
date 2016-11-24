@@ -13,7 +13,7 @@ from lib.basis import *
 def getM12(MH,tanB):
     # Please specify here algorithm of m12 calculation
     Beta = math.atan(tanB)
-    m12 = MH**2 / (math.sin(Beta)*math.cos(Beta))
+    m12 = MH**2 * (math.sin(Beta)*math.cos(Beta))
     m12 = math.sqrt(m12)
     return m12
 
@@ -21,19 +21,24 @@ def setInputs():
     logging.debug('I`m in setInput::setInput')
     #Physical basis
     # Types of 2HDM to be processed 1 / 2 / 3 / 4
-    thdmTypes = [2,3]
+    thdmTypes = [3]
     #Types of higgs bosons
     higgsTypes = [21]#h,H,A
     #tanBetas
-    tanBetaRange = [20.,30.]
-    tanBetaStep = 1
+    tanBetaRange = [10.,100.]
+    tanBetaStep = 0.25
     tanBetas = [ tanBetaRange[0]+tanBetaStep*i for i in range(int((tanBetaRange[1]-tanBetaRange[0])/tanBetaStep+1)) ]
     #H masses
-    mH = [300]
+    mH_range = [150,1300]
+    mH_step = 50.
+    #mH = [mH_range[0] + mH_step * i for i in range(int((mH_range[1] - mH_range[0])/mH_step + 1))]
+    mH = [200,250,300,350,400,500,600,700,800,900,1100,1300]
     #h masses
     mh = [125.]
     #sin(beta - alpha)
-    sinB_As = [0.995]
+    sinB_A_Range = [0.8,1]
+    sinB_A_step = 0.001
+    sinB_As = [sinB_A_Range[0] + sinB_A_step* i for i in range(int((sinB_A_Range[1] - sinB_A_Range[0])/sinB_A_step + 2))]
     #A masses
     mA = []
     #m12 Parameter

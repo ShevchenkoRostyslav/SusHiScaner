@@ -49,11 +49,12 @@ class submitter(object):
             job = int(points/cmd_args.pointsPerJob) + 1
 
             if( self._StartNewJob(points, cmd_args.pointsPerJob) or points == 0):
-                self.PrepareWorkDir(job,basis)
+                out_csh = self.PrepareWorkDir(job,basis)
 
-            self.AddOnePoint(job, basis)
+            self.AddOnePoint(job, basis, out_csh)
             if( self._StartNewJob(points+1, cmd_args.pointsPerJob) or points == len(basis_arr) - 1):
-                self.SubmitJob(job)
+                self.SubmitJob(job, out_csh)
+                out_csh.close()
 
             points += 1
 
@@ -79,17 +80,18 @@ class submitter(object):
         newCsh = 'job_'+str(job)+'.csh'
         outCsh = open(newCsh, 'w')
         outCsh.write('#!/bin/csh' + '\n')
-        outCsh.close()
         # Add permissions to the .csh file
         MakeFileExecutable(newCsh)
 
         job_dir = os.getcwd()
         command1 = 'cd ' + job_dir
-        self.UpdateSubmissionCsh(command1, newCsh)
+        outCsh.write(command1 + "\n")
         # Get back to the parent directory:
         os.chdir(root_dir)
 
-    def AddOnePoint(self,job,par_set):
+        return outCsh
+
+    def AddOnePoint(self, job, par_set, out_csh):
         """Method that doesn't create a directory but modify the csh.
 
         """
@@ -99,17 +101,16 @@ class submitter(object):
         # Modify datacard with current set of parameters
         card_name = self._UpdateDataCard(par_set)
         # Check whether csh script exists:
-        cshFile = 'job_'+str(job)+'.csh'
-        if not os.path.exists(cshFile):
+        if not os.path.exists(out_csh.name):
             raise AttributeError("ERROR: No .csh file found at " + os.getcwd())
         command = './sushi ' + card_name + '.in ' + card_name + '.out' + ' > ' + card_name + '.log'
-        cshFile = self.UpdateSubmissionCsh(command, cshFile)
+        out_csh.write(command + '\n')
         # Cat 2HDMC output in the same .out
         command2 = 'cat 2HDMC.out >> ' + card_name + '.out'
-        cshFile = self.UpdateSubmissionCsh(command2, cshFile)
+        out_csh.write(command2 + '\n')
         # Delete output of the 2HDMC:
         command3 = 'rm 2HDMC.out'
-        cshFile = self.UpdateSubmissionCsh(command3, cshFile)
+        out_csh.write(command3 + '\n')
         # Get back to the parent directory:
         os.chdir(root_dir)
 
@@ -122,7 +123,7 @@ class submitter(object):
             flag = True
         return flag
 
-    def SubmitJob(self,job):
+    def SubmitJob(self, job, out_csh):
         """Method to submit single job.
 
         """
@@ -131,7 +132,7 @@ class submitter(object):
         os.chdir('job_' + str(object=job))
         thisCsh = 'job_' + str(job) + '.csh'
         command1 = 'tar -cvzf out_job_' + str(job) + '.tar.gz *.out'
-        thisCsh = self.UpdateSubmissionCsh(command1, thisCsh)
+        out_csh.write(command1 + '\n')
         cmd = self._command + ' ' + self._parameters + ' ' + thisCsh
         # print 'cmd: ' + cmd
         proc = Popen(cmd,shell=True)
@@ -176,16 +177,6 @@ class submitter(object):
         #copy file:
         # copyfile(oldLoc + oldName, newLoc + newName) #doesn't work because permissions to the file are not coppied :(
         call('cp ' + oldLoc + oldName + ' ' + newLoc + newName, shell=True)
-
-    def UpdateSubmissionCsh(self,command, cshFile):
-        """Method to update csh script.
-
-        """
-        # sanity check
-        if not os.path.exists(cshFile):
-            raise AttributeError("ERROR: File " + cshFile + " doens't exist. Please check spelling")
-        call('echo $"' + command + '" >> ' + cshFile, shell=True)
-        return cshFile
 
     def _UpdateDataCard(self,basis):
         """Methods to update the datacard with current configuration with physical basis.
