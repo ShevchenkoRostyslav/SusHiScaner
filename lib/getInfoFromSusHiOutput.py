@@ -139,7 +139,6 @@ def getInfoFromSusHiOutput(input_dir,output_dir,type2HDM,higgs):
     create_root_file = True
     # Get pois
     _keys_scan = [i for i in dict_scan]
-    print '_keys_scan', _keys_scan
     # Assign reference strings from sushi output
     _keys_sushi = [i for i in dict_sushi]
     # Assign reference 'greps' from 2HDMC output
@@ -147,12 +146,9 @@ def getInfoFromSusHiOutput(input_dir,output_dir,type2HDM,higgs):
     # Join all together
     keys = ' '.join(_keys_scan + _keys_sushi + _keys_2hdmc)
     # Start loop over the DIRs with ouput of the SusHi
-    i = 0
     for dir in glob.glob(input_dir + 'job*'):
         # Start loop over the FILEs in the DIR
         for file in glob.glob(dir + '/*out'):
-            if i > 20 : break
-            i += 1
             # Check whether this file contains specified 2hdm type and higgs boson
             if not UseThisFile(file, type2HDM, higgs):
                 create_root_file = False

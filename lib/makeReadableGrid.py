@@ -13,6 +13,9 @@ def untarSusHiOutput(output_dir):
     # Create folder for untar files:
     MakeCleanDir(output_dir + '/Untar_files/')
 
+    # Check the output_dir
+    if len(glob.glob(output_dir + 'sushi_out/job_*')) == 0:
+        raise AttributeError("ERROR: Wrong dir name " + output_dir + " was provided to tools::untarSusHiOutput")
     # Iterate through the job_i folders from SusHi output
     for job in glob.glob(output_dir + 'sushi_out/job_*'):
         # use only the name of the folder

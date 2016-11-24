@@ -28,7 +28,7 @@ def FillTTree(dictionary,sub_line,tree):
     see getInfoFromSusHiOutput::GetLineWithOutput function
     """
     for v, f in zip(dictionary, sub_line):
-        tree.vars[str(v)] = float(f)
+        tree.vars[str(v)][0] = float(f)
 
 def MakeTTree(dict_scan,dict_sushi,dict_2hdmc):
     """Method to create TTree object accroding to input higgs type.
@@ -40,10 +40,10 @@ def MakeTTree(dict_scan,dict_sushi,dict_2hdmc):
     tree.vars = {}
     # Iterate over the Scan vars
     CreateTBranch(dict_scan, tree)
-    # Iterate over the 2HDMC output
-    CreateTBranch(dict_sushi, tree)
     # Iterate over the SusHi output
     CreateTBranch(dict_sushi, tree)
+    # Iterate over the 2HDMC output
+    CreateTBranch(dict_2hdmc, tree)
 
     return tree
 
