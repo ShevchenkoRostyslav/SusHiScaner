@@ -1,12 +1,19 @@
 #!/usr/bin/python
+
+'''Class for submission jobs to naf/lxplus/shell
+
+'''
+
 import sys, os, commands
 import logging
-from subprocess import call
+from subprocess import call,Popen
 import uuid
+from tools import *
+from shutil import copyfile
+import fileinput
+
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__)) + '/../' # full path of ROOT folder
-'''
-Class for submission jobs to naf/lxplus/shell
-'''
+
 
 class submitter(object):
     def __init__(self,type,command = '',parameters = ''):
@@ -24,12 +31,12 @@ class submitter(object):
         assert 0, 'Wrong cluster selected: ' + type
     choose_cluster = staticmethod(choose_cluster)
 
-    """
-    The main method. Used to submit jobs to naf/lxplus/shell
-    use private methods that are overwritten in the derived classes
-    """
-
     def submit(self,cmd_args,basis_arr):
+        """The main method.
+
+        Used to submit jobs to naf/lxplus/shell use private methods that
+        are overwritten in the derived classes
+        """
         #check whether output exists:
         if not os.path.exists(cmd_args.output_dir):
             os.makedirs(cmd_args.output_dir)
@@ -52,46 +59,43 @@ class submitter(object):
 
         print 'Submission DONE!'
 
-
-    """
-    Method used to prepare working directory for farm usage.
-    Also .csh scripts and datacards.in are prepared
-    """
     def PrepareWorkDir(self,job,par_set):
+        """Method used to prepare working directory for farm usage.
+
+        Also .csh scripts and datacards.in are prepared
+        """
+
         root_dir = os.getcwd()
         # clear directory with the same name
-        if os.path.exists('job_' + str(job)): call('rm -r job_' + str(job),shell=True)
-        os.makedirs('job_' + str(job))
+        MakeCleanDir('job_' + str(job))
         os.chdir('job_' + str(job))#go to job_i
 
         # copy binary
         self.CopyFile(ROOT_DIR + 'bin', '.', 'sushi')
+        # copy template .in file
+        self.CopyFile(ROOT_DIR + 'datacards','.','2HDMC_' + str(par_set.basis) + '.in')
 
         #prepare new csh file to run at the farm
         newCsh = 'job_'+str(job)+'.csh'
         outCsh = open(newCsh, 'w')
         outCsh.write('#!/bin/csh' + '\n')
         outCsh.close()
-        call('chmod +x ' + newCsh, shell=True)
+        # Add permissions to the .csh file
+        MakeFileExecutable(newCsh)
 
         job_dir = os.getcwd()
         command1 = 'cd ' + job_dir
         self.UpdateSubmissionCsh(command1, newCsh)
         # Get back to the parent directory:
         os.chdir(root_dir)
-        # self.AddOnePoint(job, par_set)
 
-        # newCsh = self.UpdateSubmissionCsh(command1, newCsh)
-
-    """
-    Method that doesn't create a directory but modify the csh
-    """
     def AddOnePoint(self,job,par_set):
+        """Method that doesn't create a directory but modify the csh.
+
+        """
         root_dir = os.getcwd()
         # Change directory
         os.chdir('job_' + str(object=job))
-        # Copy new datacard
-        self.CopyFile(ROOT_DIR + 'datacards','.','2HDMC_' + str(par_set.basis) + '.in')
         # Modify datacard with current set of parameters
         card_name = self._UpdateDataCard(par_set)
         # Check whether csh script exists:
@@ -109,47 +113,44 @@ class submitter(object):
         # Get back to the parent directory:
         os.chdir(root_dir)
 
-    """
-    Private method to Check whether a folder for new job
-    should be created
-    """
     def _StartNewJob(self,points, pointsPerJob):
+        """Private method to Check whether a folder for new job should be created.
+
+        """
         flag = False
         if (points)%pointsPerJob == 0:
             flag = True
         return flag
 
-    """
-    Method to submit single job
-    """
     def SubmitJob(self,job):
+        """Method to submit single job.
+
+        """
         root_dir = os.getcwd()
         # Change directory
         os.chdir('job_' + str(object=job))
         thisCsh = 'job_' + str(job) + '.csh'
         command1 = 'tar -cvzf out_job_' + str(job) + '.tar.gz *.out'
         thisCsh = self.UpdateSubmissionCsh(command1, thisCsh)
-        print 'submitting job',str(job)
-#     cmd = 'bsub -q ' + queue + ' ' + thisCsh
         cmd = self._command + ' ' + self._parameters + ' ' + thisCsh
-        call(cmd,shell=True)
-        # self.processCmd(cmd)
+        # print 'cmd: ' + cmd
+        proc = Popen(cmd,shell=True)
         # Get back to the parent directory:
         os.chdir(root_dir)
 
-    """
-    Method to process cmd command for submission
-    """
     def processCmd(cmd, quite = 0):
+        """Method to process cmd command for submission.
+
+        """
         status, output = commands.getstatusoutput(cmd)
         if (status !=0 and not quite):
             print 'Error in processing command:\n   ['+cmd+']'
             print 'Output:\n   ['+output+'] \n'
 
-    """
-    Method to copy file from one directory to another
-    """
     def CopyFile(self,oldLoc, newLoc, oldName, newName = ''):
+        """Method to copy file from one directory to another.
+
+        """
         #check whether directory exists
         if not os.path.exists(oldLoc):
             raise AttributeError("ERROR: Location " + oldLoc + " doens't exist. Please check spelling")
@@ -169,24 +170,27 @@ class submitter(object):
         if not newLoc.endswith('/'):
             newLoc += '/'
 
+        # check whether newName should be the same as old Name:
+        if newName == '': newName = oldName
+
         #copy file:
+        # copyfile(oldLoc + oldName, newLoc + newName) #doesn't work because permissions to the file are not coppied :(
         call('cp ' + oldLoc + oldName + ' ' + newLoc + newName, shell=True)
 
-    """
-    Method to update csh script
-    """
     def UpdateSubmissionCsh(self,command, cshFile):
+        """Method to update csh script.
+
+        """
         # sanity check
         if not os.path.exists(cshFile):
             raise AttributeError("ERROR: File " + cshFile + " doens't exist. Please check spelling")
         call('echo $"' + command + '" >> ' + cshFile, shell=True)
         return cshFile
 
-    """
-    Methods to update the datacard with current configuration
-    with physical basis
-    """
     def _UpdateDataCard(self,basis):
+        """Methods to update the datacard with current configuration with physical basis.
+
+        """
         if basis.basis == 'physicalbasis':
             temp_name = self._UpdatePhysicalbasisDataCard(basis.higgsType, basis.thdmType, basis.tanBeta, basis.m12, basis.mh, basis.mH, basis.mA, basis.mC, basis.sinB_A, basis.lambda6, basis.lambda7)
         elif basis.basis == 'lambdabasis':
@@ -199,84 +203,60 @@ class submitter(object):
         templateInput = name + '.in'
 
         # Redefine the name of the input datacard and output
-        # tempInputName = 'type' + str(int(thdmType)) + '_Htype_' + str(int(higgsType)) + '_tanB' + str(round(tanBeta,2)) + '_m12_' + str(round(m12,2)) \
-        # + '_mh' + str(round(mh,2)) + '_mH' + str(round(mH,2)) + '_mA' + str(round(mA,2)) + '_mC' + str(round(mC,2)) + '_sinBA' + str(round(sinB_A,2)) + '_L6' + str(round(lambda6,2)) + '_L7' + str(round(lambda7,2));
         tempInputName = 'type' + str(int(thdmType)) + '_Htype_' + str(int(higgsType)) + '_' + str(object=uuid.uuid1()) #Couldn't use meaningfull name because of limitation on the string size fomr sushi side
         tempInput = tempInputName + '.in';
 
         # Check whether input datacard exists:
         if not os.path.exists(templateInput): raise BaseException('ERROR:PROBLEM in submitter::_UpdatePhysicalbasisDataCard - wrong dir')
 
-        # Copy initial.in file to new name
-        call('mv ' + templateInput + ' ' + tempInput,shell=True)
-        # Change parameters inside the datacard
-        # mh
-        call("sed -i 's/HLOWM/" + str(mh) + "/g' " + tempInput,shell=True)
-        # mH
-        call("sed -i 's/HCAPM/" + str(mH) + "/g' " + tempInput,shell=True)
-        # mA
-        call("sed -i 's/HAMASS/" + str(mA) + "/g' " + tempInput,shell=True)
-        # mC
-        call("sed -i 's/HCMASS/" + str(mC) + "/g' " + tempInput,shell=True)
-        # sin(beta-alpha)
-        call("sed -i 's/SINB_A/" + str(sinB_A) + "/g' " + tempInput, shell=True)
-        # lambda6
-        call("sed -i 's/L6/" + str(lambda6) + "/g' " + tempInput, shell=True)
-        # lambda7
-        call("sed -i 's/L7/" + str(lambda7) + "/g' " + tempInput, shell=True)
-        # thdm type
-        call("sed -i 's/THDMTYPE/" + str(thdmType) + "/g' " + tempInput, shell=True)
-        # higgs types
-        call("sed -i 's/HIGGSTYPE/" + str(higgsType) + "/g' " + tempInput, shell=True)
-        # tanBeta
-        call("sed -i 's/TANBETA/" + str(tanBeta) + "/g' " + tempInput, shell=True)
-        # m12
-        call("sed -i 's/M12/" + str(m12) + "/g' " + tempInput, shell=True)
+        # Copy initial.in file to new name and replace strings line-by-line
+        with open(templateInput) as infile, open(tempInput, 'w') as outfile:
+            for line in infile:
+                line = line.replace('HLOWM', str(mh))
+                line = line.replace('HCAPM', str(mH))
+                line = line.replace('HAMASS', str(mA))
+                line = line.replace('HCMASS', str(mC))
+                line = line.replace('SINB_A', str(sinB_A))
+                line = line.replace('L6', str(lambda6))
+                line = line.replace('L7', str(lambda7))
+                line = line.replace('THDMTYPE', str(thdmType))
+                line = line.replace('HIGGSTYPE', str(higgsType))
+                line = line.replace('TANBETA', str(tanBeta))
+                line = line.replace('M12', str(m12))
+                outfile.write(line)
 
         return tempInputName
 
-    """
-    with lambda basis
-    """
     def _UpdateLambdabasisDataCard(self,higgsType,thdmType,tanBeta,m12,lambda1,lambda2,lambda3,lambda4,lambda5,lambda6,lambda7):
+        """with lambda basis.
+
+        """
         # Input data card
         name = '2HDMC_lambdabasis'
         templateInput = name + '.in'
 
         # Redefine the name of the input datacard and output
-        # tempInputName = 'type' + str(int(thdmType)) + '_Htype_' + str(int(higgsType)) + '_tanB' + str(round(tanBeta,2)) + '_m12' + str(round(m12,2)) \
-        # + '_L1' + str(round(lambda1,2)) + '_L2' + str(round(lambda2,2)) + '_L3' + str(round(lambda3,2)) + '_L4' + str(round(lambda4,2)) + '_L5' + str(round(lambda5,2)) + '_L6' + str(round(lambda6,2)) + '_L7' + str(round(lambda7,2))
         tempInputName = 'type' + str(int(thdmType)) + '_Htype_' + str(int(higgsType)) + '_' + str(object=uuid.uuid1())
         tempInput = tempInputName + '.in';
 
         # Check whether input datacard exists:
         if not os.path.exists(templateInput): raise BaseException('ERROR:PROBLEM in submitter::_UpdateLambdabasisDataCard - wrong dir')
 
-        # Copy initial.in file to new name
-        call('mv ' + templateInput + ' ' + tempInput,shell=True)
-        # Change parameters inside the datacard
-        # lambda1
-        call("sed -i 's/L1/" + str(lambda1) + "/g' " + tempInput,shell=True)
-        # lambda2
-        call("sed -i 's/L2/" + str(lambda2) + "/g' " + tempInput,shell=True)
-        # lambda3
-        call("sed -i 's/L3/" + str(lambda3) + "/g' " + tempInput,shell=True)
-        # lambda4
-        call("sed -i 's/L4/" + str(lambda4) + "/g' " + tempInput,shell=True)
-        # lambda5
-        call("sed -i 's/L5/" + str(lambda5) + "/g' " + tempInput, shell=True)
-        # lambda6
-        call("sed -i 's/L6/" + str(lambda6) + "/g' " + tempInput, shell=True)
-        # lambda7
-        call("sed -i 's/L7/" + str(lambda7) + "/g' " + tempInput, shell=True)
-        # thdm type
-        call("sed -i 's/THDMTYPE/" + str(thdmType) + "/g' " + tempInput, shell=True)
-        # higgs types
-        call("sed -i 's/HIGGSTYPE/" + str(higgsType) + "/g' " + tempInput, shell=True)
-        # tanBeta
-        call("sed -i 's/TANBETA/" + str(tanBeta) + "/g' " + tempInput, shell=True)
-        # m12
-        call("sed -i 's/M12/" + str(m12) + "/g' " + tempInput, shell=True)
+        # Copy initial.in file to new name and replace strings line-by-line
+        with open(templateInput) as infile, open(tempInput, 'w') as outfile:
+            for line in infile:
+                line = line.replace('L1', str(lambda1))
+                line = line.replace('L2', str(lambda2))
+                line = line.replace('L3', str(lambda3))
+                line = line.replace('L4', str(lambda4))
+                line = line.replace('L5', str(lambda5))
+                line = line.replace('L6', str(lambda6))
+                line = line.replace('L7', str(lambda7))
+                line = line.replace('THDMTYPE', str(thdmType))
+                line = line.replace('HIGGSTYPE', str(higgsType))
+                line = line.replace('TANBETA', str(tanBeta))
+                line = line.replace('M12', str(m12))
+                outfile.write(line)
 
         return tempInputName
 
