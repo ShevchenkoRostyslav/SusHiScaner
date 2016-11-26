@@ -1,3 +1,26 @@
 1. Project Goals:
 
-Project is designed to 
+Project is designed as universal tool to work with SusHi
+(for "Supersymmetric Higgs") [0] interfaced with 2HDMC [1], in particular to
+submit huge amount of jobs using any of the available in SusHi basises
+( WARNING: only lambda and physical are supported right now). Moreover - tools to
+produce human readable .txt file with scans and .root file with TTree for
+analisers are available.
+
+2. System architecture/infrastructure
+
+Project have to be able to run at CERN (lxplus), DESY (naf) and private laptops
+Should be compatible with Python, v >= 2.7, SusHi v >= 1.5.0.
+
+3. User dialogs and the Control flow
+
+User should interact with a tool ONLY via:
+- setup.py - setup file, where user should specify basis and user-defined
+algorithm to determine poi.
+- project.py - to submit jobs
+- postproceessor.py - to process the output of the project.
+
+
+
+[0] -
+[1] -
