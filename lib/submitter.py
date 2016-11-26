@@ -53,7 +53,7 @@ class submitter(object):
 
             self.AddOnePoint(job, basis, out_csh)
             if( self._StartNewJob(points+1, cmd_args.pointsPerJob) or points == len(basis_arr) - 1):
-                self.SubmitJob(job, out_csh)
+                self.SubmitJob('job_' + str(job))
                 out_csh.close()
 
             points += 1
@@ -123,21 +123,27 @@ class submitter(object):
             flag = True
         return flag
 
-    def SubmitJob(self, job, out_csh):
-        """Method to submit single job.
+    def SubmitJob(self, job_dir):
+        """Method to submit single job by job_dir.
 
         """
         root_dir = os.getcwd()
+        # Get base_dir name:
+        base_dir_name = os.path.basename(os.path.relpath(job_dir))
         # Change directory
-        os.chdir('job_' + str(object=job))
-        thisCsh = 'job_' + str(job) + '.csh'
-        command1 = 'tar -cvzf out_job_' + str(job) + '.tar.gz *.out'
-        out_csh.write(command1 + '\n')
+        os.chdir(job_dir)
+        thisCsh = base_dir_name + '.csh'
         cmd = self._command + ' ' + self._parameters + ' ' + thisCsh
         # print 'cmd: ' + cmd
         proc = Popen(cmd,shell=True)
         # Get back to the parent directory:
         os.chdir(root_dir)
+
+    # def SubmitJob(self, job=10000000):
+    #     """Method to submit single job by job_id.
+    #
+    #     """
+    #     self.SubmitJob('job_' + str(job))
 
     def processCmd(cmd, quite = 0):
         """Method to process cmd command for submission.

@@ -40,6 +40,7 @@ def ParseOption():
     parser.add_argument('-v',dest='verbose', help="verbosity level, default - WARNING",default='WARNING',choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'])
     parser.add_argument('-i',dest='input_ini', type=str, help='input SusHi datacard (.ini)',default='datacards/2HDMC_physicalbasis.in')
     parser.add_argument('-o,output_dir',dest='output_dir', type=str, help='output dir path',default='output')
+    parser.add_argument('-r,resubmit',dest='resubmit',action='store_true',help='if specified - resubmission of job will be done')
 
     #add subparsers for different basis and run options
     subparsers = parser.add_subparsers(dest='submitter')
@@ -76,14 +77,19 @@ def ParseOption():
     parser_lxplus = subparsers.add_parser('lxplus',help='arguments to run jobs at lxplus')
     parser_lxplus.add_argument('--q', dest='queue', required=True, type=int, help='submission queue(1nh,8nh,1nd...)')
     parser_lxplus.add_argument('--n', dest='pointsPerJob', type=int, help='Number of points per job', default=1)
+    parser_lxplus.add_argument('-d,dir_to_resubmit',  dest='JobDirToResubmit',type=str, help='Job directory to resubmit',default=None)
 
     #create parser to run jobs iniciated in setinput at naf machines
     parser_naf = subparsers.add_parser('naf',help='arguments to run jobs at naf')
     parser_naf.add_argument('--n', dest='pointsPerJob', type=int, help='Number of points per job', default=1)
+    parser_naf.add_argument('-d,dir_to_resubmit',  dest='JobDirToResubmit',type=str, help='Job directory to resubmit',default=None)
 
     args = parser.parse_args()
     # convert output_dir to absolute path
     args.output_dir = os.path.abspath(os.path.join(os.getcwd(), args.output_dir))
+    # convert dir for resubmission to absolute path if specified
+    if not args.JobDirToResubmit == None:
+        args.JobDirToResubmit = os.path.abspath(os.path.join(os.getcwd(), args.JobDirToResubmit)) + '/'
     # Add folder to the output
     args.output_dir += '/sushi_out/'
 

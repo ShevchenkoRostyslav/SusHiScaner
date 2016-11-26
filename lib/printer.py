@@ -14,8 +14,10 @@ def UserDecision(message):
         if continueSubmission in ['n','y']: break
         else:
             print('That is not a valid option! Please specify `y` or `n`')
-    if continueSubmission == 'n': sys.exit()
-    else return True
+    if continueSubmission == 'n':
+        return False
+    else:
+        return True
 
 def differentVals(vals,name,precision = 2):
     unique = []
@@ -54,4 +56,4 @@ def printInput(basis_ar,iput):
         print 'lambda6: ', differentVals(basis_ar, 'lambda6')
         print 'lambda7: ', differentVals(basis_ar, 'lambda7')
     # decide whether u want to continue or not
-    UserDecision('Continue to submit to' + iput.submitter + ' ? Type y or n:\n')
+    if not UserDecision('Continue to submit to' + iput.submitter + ' ? Type y or n:\n'): sys.exit()
