@@ -1,4 +1,21 @@
+#!/usr/bin/env python
+"""Module to print messages.
+
+"""
+
 import sys
+
+__author__ = "Rostyslav Shevchenko"
+__email__ = "rostyslav.shevchenko@desy.de"
+
+def UserDecision(message):
+    while True:
+        continueSubmission = raw_input(message)
+        if continueSubmission in ['n','y']: break
+        else:
+            print('That is not a valid option! Please specify `y` or `n`')
+    if continueSubmission == 'n': sys.exit()
+    else return True
 
 def differentVals(vals,name,precision = 2):
     unique = []
@@ -37,9 +54,4 @@ def printInput(basis_ar,iput):
         print 'lambda6: ', differentVals(basis_ar, 'lambda6')
         print 'lambda7: ', differentVals(basis_ar, 'lambda7')
     # decide whether u want to continue or not
-    while True:
-        continueSubmission = raw_input('Continue to submit to' + iput.submitter + ' ? Type y or n:\n')
-        if continueSubmission in ['n','y']: break
-        else:
-            print('That is not a valid option! Please specify `y` or `n`')
-    if continueSubmission == 'n': sys.exit()
+    UserDecision('Continue to submit to' + iput.submitter + ' ? Type y or n:\n')
