@@ -67,7 +67,9 @@ def GetBRFrom2HDMCOut(line, tag, dict_to_append):
     if str(tag) in line:
         # Split the line, to the: NUMBER     <<VALUE>>      # TAG
         value = line.split()[0]
-        dict_to_append.append(value)
+    else:
+        value = '0'
+    dict_to_append.append(value)
 
 # def GetBRFrom2HDMCOut(line, init1, init2, final):
 #     """Method to grep 2HDMC part of the output.
@@ -177,7 +179,7 @@ def GetLineWithOutput(stream_file,dictHiggs,dict_scan,tree):
     # Make a single line in the future output .txt file
     txt_line = ' '.join(pois + fromSushi + from2hdmc)
     # print txt_line
-    return line
+    return txt_line
 
 def getInfoFromSusHiOutput(input_dir,output_dir,type2HDM,higgs):
     """Method to parse output of the SusHi to create a grid and store in .txt and .root
