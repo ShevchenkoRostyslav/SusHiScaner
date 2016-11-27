@@ -34,18 +34,13 @@ def MakeTTree(dict_scan,dict_sushi,dict_2hdmc):
     """Method to create TTree object accroding to input higgs type.
 
     """
-
     tree = TTree('tree','2HDM parameter space')
     # Assign a dic to this tree
     tree.vars = {}
     # Iterate over the Scan vars
-    CreateTBranch(dict_scan, tree)
-    # Iterate over the SusHi output
-    CreateTBranch(dict_sushi, tree)
-    # Iterate over the 2HDMC output
-    CreateTBranch(dict_2hdmc, tree)
-    # More advanced implementation to test:
-    # [CreateTBranch(d,tree) for d in [dict_scan,dict_sushi,dict_sushi]]
+    [CreateTBranch(d,tree) for d in (dict_scan,dict_sushi,dict_2hdmc)]
+    # for d in (dict_scan,dict_sushi,dict_2hdmc):
+    #     CreateTBranch(d,tree)
 
     return tree
 
