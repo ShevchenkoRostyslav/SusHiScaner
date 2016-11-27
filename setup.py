@@ -25,8 +25,8 @@ def setInputs():
     #Types of higgs bosons
     higgsTypes = [21]#h,H,A
     #tanBetas
-    tanBetaRange = [10.,100.]
-    tanBetaStep = 0.25
+    tanBetaRange = [10.,12.]
+    tanBetaStep = 1.
     tanBetas = [ tanBetaRange[0]+tanBetaStep*i for i in range(int((tanBetaRange[1]-tanBetaRange[0])/tanBetaStep+1)) ]
     #H masses
     mH_range = [150,1300]
@@ -37,7 +37,7 @@ def setInputs():
     mh = [125.]
     #sin(beta - alpha)
     sinB_A_Range = [0.8,1]
-    sinB_A_step = 0.001
+    sinB_A_step = 0.1
     sinB_As = [sinB_A_Range[0] + sinB_A_step* i for i in range(int((sinB_A_Range[1] - sinB_A_Range[0])/sinB_A_step + 2))]
     #A masses
     mA = []

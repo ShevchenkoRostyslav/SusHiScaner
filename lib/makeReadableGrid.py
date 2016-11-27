@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import os
 import glob
-from subprocess import call
+from subprocess import call,Popen
 from tools import *
 from getInfoFromSusHiOutput import *
 
@@ -28,7 +28,9 @@ def untarSusHiOutput(output_dir):
         untar_dir = output_dir + '/Untar_files/' + job_i
         os.makedirs(untar_dir)
         # Untar
-        call('tar -xvzf ' + tar + ' -C ' + untar_dir,shell=True)
+        proc = Popen('tar -xvzf ' + tar + ' -C ' + untar_dir, shell=True)
+        proc.wait()
+        # call('tar -xvzf ' + tar + ' -C ' + untar_dir,shell=True)
 
 # Module to make readable txt file
 def makeReadableGrid(output_dir):
@@ -41,4 +43,4 @@ def makeReadableGrid(output_dir):
     rootDir = MakeCleanDir(output_dir + '/rootFiles/')
     for higgs in higgsType:
         for type2HDM in types2HDM:
-            getInfoFromSusHiOutput(output_dir + '/Untar_files/',output_dir,type2HDM,higgs)
+            getInfoFromSusHiOutput(output_dir + '/sushi_out/',output_dir,type2HDM,higgs)
