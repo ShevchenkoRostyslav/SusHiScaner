@@ -39,8 +39,6 @@ def MakeTTree(dict_scan,dict_sushi,dict_2hdmc):
     tree.vars = {}
     # Iterate over the Scan vars
     [CreateTBranch(d,tree) for d in (dict_scan,dict_sushi,dict_2hdmc)]
-    # for d in (dict_scan,dict_sushi,dict_2hdmc):
-    #     CreateTBranch(d,tree)
 
     return tree
 
