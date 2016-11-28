@@ -19,7 +19,7 @@ __maintainer__ = "Rostyslav Shevchenko"
 __email__ = "rostyslav.shevchenko@desy.de"
 __status__ = "Production"
 
-def GetFromSushiOut(line, dict):
+def GetFromSushiOut(stream_file, tag, dict_to_append):
     """Method to grep SusHi part of the output.
 
     Method to grep SusHi part of the output to get information
@@ -28,17 +28,16 @@ def GetFromSushiOut(line, dict):
     which is basically just a description of the line in the SusHi output
     """
     # Search for a tag (i.e. tan(beta)/sin(beta-alpha) etc) in a file
-    if str(tag) in line:
-        # Split the line, to the: NUMBER     <<VALUE>>      # TAG
-        if tag != 'Charged Higgs decays':
-            value = line.split()[1]
-        else:
-           value = line.split()[2]
+    for line in stream_file:
+        if str(tag) in line:
+            # Split the line, to the: NUMBER     <<VALUE>>      # TAG
+            if tag != 'Charged Higgs decays':
+                value = line.split()[1]
+            else:
+                value = line.split()[2]
+            dict_to_append.append(value)
 
-        print tag + ' ' + value
-        return value
-
-def GetFromSushiOut(line, tag, dict_to_append):
+def GetBRFrom2HDMCOut(stream_file, tag, dict_to_append):
     """Method to grep SusHi part of the output.
 
     Method to grep SusHi part of the output to get information
@@ -46,28 +45,21 @@ def GetFromSushiOut(line, tag, dict_to_append):
     grep is done using the tags defined in gridSaveOrder
     which is basically just a description of the line in the SusHi output
     """
+    line_h1 = 'DECAY  ' + str(h1)   # bearing line for h1
+    line_h2 = 'DECAY  ' + str(h2)   # bearing line for h2
     # Search for a tag (i.e. tan(beta)/sin(beta-alpha) etc) in a file
-    if str(tag) in line:
-        # Split the line, to the: NUMBER     <<VALUE>>      # TAG
-        if tag != 'Charged Higgs decays':
-            value = line.split()[1]
-        else:
-           value = line.split()[2]
-        dict_to_append.append(value)
-
-def GetBRFrom2HDMCOut(line, tag, dict_to_append):
-    """Method to grep SusHi part of the output.
-
-    Method to grep SusHi part of the output to get information
-    about cross-sections and bosons masses
-    grep is done using the tags defined in gridSaveOrder
-    which is basically just a description of the line in the SusHi output
-    """
-    # Search for a tag (i.e. tan(beta)/sin(beta-alpha) etc) in a file
-    if str(tag) in line:
-        # Split the line, to the: NUMBER     <<VALUE>>      # TAG
-        value = line.split()[0]
-        dict_to_append.append(value)
+    for line in stream_file:
+        # Check whether we get to the line_h1
+        if line_h1 in line:
+            line_h1_number = count_lines
+        # If we pass this line:
+        if count_lines > line_h1_number:
+            if str(tag) in line:
+                # Split the line, to the: NUMBER     <<VALUE>>      # TAG
+                value = line.split()[0]
+            else:
+                value = '0'
+            dict_to_append.append(value)
 
 # def GetBRFrom2HDMCOut(line, init1, init2, final):
 #     """Method to grep 2HDMC part of the output.
@@ -142,26 +134,23 @@ def GetLineWithOutput(stream_file,dictHiggs,dict_scan,tree):
     fromSushi = []
     from2hdmc = []
     temp = []
-    # line-by-line search:
-    for line in stream_file:
-        # First get values of pois
-        if not len(pois) == len(dict_scan):
-            [GetFromSushiOut(line, dict_scan[k], pois) for k in dict_scan]
-        if not len(fromSushi) == len(dict_sushi):
-            [GetFromSushiOut(line, dict_sushi[k],fromSushi) for k in dict_sushi]
-        # 2HDMC output:
-        # Check whether we get to the line_h1
-        if line_h1 in line:
-            line_h1_number = count_lines
-        # If we pass this line:
-        if count_lines > line_h1_number:
-            if not len(from2hdmc) == len(dict_2hdmc):
-                [GetBRFrom2HDMCOut(line, dict_2hdmc[k],from2hdmc) for k in dict_2hdmc]
+    # First get values of pois
+    if not len(pois) == len(dict_scan):
+        [GetFromSushiOut(stream_file, dict_scan[k], pois) for k in dict_scan]
+    if not len(fromSushi) == len(dict_sushi):
+        [GetFromSushiOut(stream_file, dict_sushi[k],fromSushi) for k in dict_sushi]
+    # 2HDMC output:
+    # Check whether we get to the line_h1
+    if line_h1 in line:
+        line_h1_number = count_lines
+    # If we pass this line:
+    if count_lines > line_h1_number:
+        if not len(from2hdmc) == len(dict_2hdmc):
+            [GetBRFrom2HDMCOut(line, dict_2hdmc[k],from2hdmc) for k in dict_2hdmc]
+    # Check whether we get to the line_h2
+    if line_h2 in line: break
 
-        # Check whether we get to the line_h2
-        if line_h2 in line: break
-
-        count_lines += 1
+    count_lines += 1
 
     # print pois
     # print fromSushi
@@ -177,7 +166,7 @@ def GetLineWithOutput(stream_file,dictHiggs,dict_scan,tree):
     # Make a single line in the future output .txt file
     txt_line = ' '.join(pois + fromSushi + from2hdmc)
     # print txt_line
-    return line
+    return txt_line
 
 def getInfoFromSusHiOutput(input_dir,output_dir,type2HDM,higgs):
     """Method to parse output of the SusHi to create a grid and store in .txt and .root
@@ -217,9 +206,9 @@ def getInfoFromSusHiOutput(input_dir,output_dir,type2HDM,higgs):
                 create_root_file = False
                 continue
             # Open the file:
-            stream_file = open(file, mode='r')
+            file_string = open(file, mode='r').read()
             # Get output from SusHi and 2HDMC
-            line = GetLineWithOutput(stream_file,dictHiggs,dict_scan,tree)
+            line = GetLineWithOutput(file_string,dictHiggs,dict_scan,tree)
             # Save the output
             if os.path.isfile(tmpTxt):
                 call('echo "' + line + '" >>  ' + tmpTxt, shell=True)

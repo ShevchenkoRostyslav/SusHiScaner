@@ -20,7 +20,5 @@ algorithm to determine poi.
 - project.py - to submit jobs
 - postproceessor.py - to process the output of the project.
 
-
-
 [0] -
 [1] -
