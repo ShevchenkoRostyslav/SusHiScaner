@@ -4,7 +4,7 @@
    Submission output should be checked for existance and completeness
 """
 
-import os
+import os,sys
 import glob
 import warnings
 from printer import UserDecision
