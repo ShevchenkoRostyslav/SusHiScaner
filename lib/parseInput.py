@@ -78,11 +78,13 @@ def ParseOption():
     parser_lxplus.add_argument('--q', dest='queue', required=True, type=int, help='submission queue(1nh,8nh,1nd...)')
     parser_lxplus.add_argument('--n', dest='pointsPerJob', type=int, help='Number of points per job', default=1)
     parser_lxplus.add_argument('-d,dir_to_resubmit',  dest='JobDirToResubmit',type=str, help='Job directory to resubmit',default=None)
+    parser_lxplus.add_argument('--submission_pars', dest='submission_pars',type=str,help='Parameters that will be used with bsub',default=None)
 
     #create parser to run jobs iniciated in setinput at naf machines
     parser_naf = subparsers.add_parser('naf',help='arguments to run jobs at naf')
     parser_naf.add_argument('--n', dest='pointsPerJob', type=int, help='Number of points per job', default=1)
     parser_naf.add_argument('-d,dir_to_resubmit',  dest='JobDirToResubmit',type=str, help='Job directory to resubmit',default=None)
+    parser_naf.add_argument('--submission_pars', dest='submission_pars',type=str,help='Parameters that will be used with bsub',default='-cwd -V -l h_rt=12:00:00')
 
     args = parser.parse_args()
     # convert output_dir to absolute path
