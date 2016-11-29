@@ -23,11 +23,11 @@ class submitter(object):
 
     def choose_cluster(type,parameters = ''):
         if type == 'naf':
-            return naf()
+            return naf(parameters)
         elif type == 'lxplus':
-            return lxplus()
+            return lxplus(parameters)
         elif type == 'shell':
-            return shell()
+            return shell(parameters)
         assert 0, 'Wrong cluster selected: ' + type
     choose_cluster = staticmethod(choose_cluster)
 
@@ -53,6 +53,9 @@ class submitter(object):
 
             self.AddOnePoint(job, basis, out_csh)
             if( self._StartNewJob(points+1, cmd_args.pointsPerJob) or points == len(basis_arr) - 1):
+                # Delete output of the 2HDMC
+                command3 = 'rm 2HDMC.out'
+                out_csh.write(command3 + '\n')
                 self.SubmitJob('job_' + str(job))
                 out_csh.close()
 
@@ -109,8 +112,8 @@ class submitter(object):
         command2 = 'cat 2HDMC.out >> ' + card_name + '.out'
         out_csh.write(command2 + '\n')
         # Delete output of the 2HDMC:
-        command3 = 'rm 2HDMC.out'
-        out_csh.write(command3 + '\n')
+        # command3 = 'rm 2HDMC.out'
+        # out_csh.write(command3 + '\n')
         # Get back to the parent directory:
         os.chdir(root_dir)
 
@@ -258,9 +261,8 @@ class submitter(object):
         return tempInputName
 
 class naf(submitter):
-    def __init__(self,command = "qsub",parameters = "-cwd -V"):
-        submitter.__init__(self,'naf',command,parameters)
-        self._command = command
+    def __init__(self,parameters = "-cwd -V"):
+        submitter.__init__(self,'naf',"qsub",parameters)
         self._parameters = parameters
 
     def __str__(self):
@@ -268,10 +270,9 @@ class naf(submitter):
 
 
 class lxplus(submitter):
-    def __init__(self,command = "bsub",parameters = "-cwd -V"):
+    def __init__(self,parameters = "-cwd -V"):
         # TODO: test lxplus version!!!!!
-        submitter.__init__(self,'lxplus',command,parameters)
-        self._command = command
+        submitter.__init__(self,'lxplus',"bsub",parameters)
         self._parameters = parameters
 
     def __str__(self):
