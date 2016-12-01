@@ -28,7 +28,7 @@ def differentVals(vals,name,precision = 2):
 def printInput(basis_ar,iput):
     print '====================INPUT===================='
     print 'Processor: ', iput.submitter
-    if iput.submitter == 'lxplus': print 'Queue: ', iput.queue
+    # if iput.submitter == 'lxplus': print 'Queue: ', iput.queue
     print 'Number of points: ', len(basis_ar)
     if iput.submitter != 'shell':
         print 'Number of points / job:', iput.pointsPerJob
