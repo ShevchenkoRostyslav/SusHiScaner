@@ -1,63 +1,59 @@
 #Brief HOWTO install and setup SusHi and co.
 #Provided by Stefano Lacaprara  <lacaprara@pd.infn.it>  INFN Padova
+#Modified by Rostyslav Shevchenko <rostyslav.shevchenko@desy.de> DESY
 
 #Intallation:
 #============
 
-#inside CMSSW 766
+New Instructions:
 
-wget ftp://ftp.gnu.org/gnu/gsl/gsl-2.2.tar.gz
-tar xzvf gsl-2.2.tar.gz
-cd gsl-2.2
-./configure --prefix=/lustre/cmswork/lacaprar/CMSSW_7_6_6/src/local
-make
-make install
-
+# 2HDMC
 wget http://www.hepforge.org/archive/2hdmc/2HDMC-1.7.0.tar.gz
 tar xzvf 2HDMC-1.7.0.tar.gz
 cd 2HDMC-1.7.0
-#Edit Makefile and add
-CFLAGS+=-I/lustre/cmswork/lacaprar/CMSSW_7_6_6/src/2HDM/local/include
-CFLAGS+=-L/lustre/cmswork/lacaprar/CMSSW_7_6_6/src/2HDM/local/lib
-
 make
-#this produces a set of executable (as ./Demo) that you can use
 
+# LHAPDF
 wget http://www.hepforge.org/archive/lhapdf/LHAPDF-6.1.6.tar.gz
 tar xsvf LHAPDF-6.1.6.tar.gz
-export BOOST_ROOT=/cvmfs/cms.cern.ch/slc6_amd64_gcc493/external/boost/1.57.0-kpegke/
-# (boost base dir can be found on /lustre/cmswork/lacaprar/CMSSW_7_6_6/config/toolbox/slc6_amd64_gcc493/tools/selected/boost.xml )
-./configure --prefix=/lustre/cmswork/lacaprar/CMSSW_7_6_6/src/local --disable-python
-mkdir /lustre/cmswork/lacaprar/CMSSW_7_6_6/src/local/share/LHAPDF/
+./configure --with-boost=/afs/cern.ch/sw/lcg/external/Boost/1.53.0_python2.4/x86_64-slc5-gcc41-opt --prefix=$HOME/local --disable-python
+mkdir $HOME/local/share/LHAPDF/
+#Get set of pdfs
 wget http://www.hepforge.org/archive/lhapdf/pdfsets/6.1/CT10nlo.tar.gz
-tar xzvf CT10nlo.tar.gz -C /lustre/cmswork/lacaprar/CMSSW_7_6_6/src/local/share/LHAPDF/
+tar xzvf CT10nlo.tar.gz -C $HOME/local/share/LHAPDF/
+wget http://www.hepforge.org/archive/lhapdf/pdfsets/6.1/MMHT2014lo68cl.tar.gz
+tar xzvf MMHT2014lo68cl.tar.gz -C $HOME/local/share/LHAPDF/
+wget http://www.hepforge.org/archive/lhapdf/pdfsets/6.1/MMHT2014nlo68cl.tar.gz
+tar xzvf MMHT2014nlo68cl.tar.gz -C $HOME/local/share/LHAPDF/
+wget http://www.hepforge.org/archive/lhapdf/pdfsets/6.1/MMHT2014nnlo68cl.tar.gz
+tar xzvf MMHT2014nnlo68cl.tar.gz -C $HOME/local/share/LHAPDF/
+
 make; make install
 
+#FeynHiggs
 wget http://wwwth.mpp.mpg.de/members/heinemey/feynhiggs/newversion/FeynHiggs-2.12.0.tar.gz
 tar xzvf FeynHiggs-2.10.0.tar.gz
 cd FeynHiggs-2.12.0/
-./configure --prefix=/lustre/cmswork/lacaprar/CMSSW_7_6_6/src/local
-make install
+./configure --prefix=$HOME/local
+gmake
 
+#SusHi
 wget http://www.hepforge.org/archive/sushi/SusHi-1.6.1.tar.gz
 tar xzvf  SusHi-1.6.1.tar.gz
 cd SusHi-1.6.1
-./configure --prefix=/lustre/cmswork/lacaprar/CMSSW_7_6_6/src/local
-edit Makefile:
-LHAPATH = 
-LHAPDF_CONFIG=./lhapdf-config
-
-ln -s ../local/bin/lhapdf-config .
-
-# edit makefile
+./configure --prefix=$HOME/local
+ln -s $HOME/local/bin/lhapdf-config .
+#Edit MakeFile
+# Specify the path to a compiled FeynHiggs version (for "make predef=FH, HB or HS"):
 FHPATH = ../FeynHiggs-2.12.0
 FHVERSION = 2.12.0
-
+# Specify the path to a compiled 2HDMC version (for "make predef=2HDMC"):
 2HDMCPATH = ../2HDMC-1.7.0
 2HDMCVERSION = 1.7.0
+# Specify the path to the compiled LHAPDF libraries (might be found automatically):
+LHAPATH = $HOME/local/lib
+LHAPDF_CONFIG=./lhapdf-config
 
-STDLIB = -L/cvmfs/cms.cern.ch/slc6_amd64_gcc493/external/gsl/1.10/lib
-
+#Make:
 make
-make predef=FH
 make predef=2HDMC
