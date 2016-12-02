@@ -298,8 +298,4 @@ class shell(submitter):
         self.CopyFile(ROOT_DIR + 'datacards','.','2HDMC_' + str(basis_arr[0].basis) + '.in')
         # Modify datacard with current set of parameters
         card_name = self._UpdateDataCard(basis_arr[0])
-        # Run sushi
-        command = './sushi ' + card_name + '.in ' + card_name + '.out' + ' > ' + card_name + '.log'
-        call(command,shell=True)
-
-        print 'Submission DONE!'
+        #

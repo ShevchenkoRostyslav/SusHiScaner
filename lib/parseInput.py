@@ -94,8 +94,6 @@ def ParseOption():
         args.JobDirToResubmit = os.path.abspath(os.path.join(os.getcwd(), args.JobDirToResubmit)) + '/'
     # Add folder to the output
     args.output_dir += '/sushi_out/'
-    # Make clean directory for output
-    MakeCleanDir(args.output_dir)
 
     return args
 
