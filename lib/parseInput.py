@@ -5,6 +5,7 @@ import logging
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from setup import *
 from printer import *
+from tools import *
 
 def chooseInput(args):
     logging.debug('I`m in parseInput::chooseInput')
@@ -93,6 +94,8 @@ def ParseOption():
         args.JobDirToResubmit = os.path.abspath(os.path.join(os.getcwd(), args.JobDirToResubmit)) + '/'
     # Add folder to the output
     args.output_dir += '/sushi_out/'
+    # Make clean directory for output
+    MakeCleanDir(args.output_dir)
 
     return args
 
