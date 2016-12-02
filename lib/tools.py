@@ -36,4 +36,4 @@ def GetServerName():
         return 'lxplus'
     elif 'naf' in hostname:
         return 'naf'
-    else return 'shell'
+    else: return 'shell'

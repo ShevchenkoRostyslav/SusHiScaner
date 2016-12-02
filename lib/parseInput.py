@@ -11,6 +11,9 @@ def chooseInput(args):
     logging.debug('I`m in parseInput::chooseInput')
     #Read input Basis from setInput file
     iput = setInputs()
+    # Check whether it's not empty
+    if(len(iput) == 0):
+        raise AssertionError('Input arrays are empty. Please check what you assign at setup.py')
     #output array of Basis
     oput = []
     #fill output array:
