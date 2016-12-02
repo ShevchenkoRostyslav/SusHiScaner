@@ -34,9 +34,11 @@ def CheckBriefLog(input_dir):
     return UserDecision('Continue without this files (y) or see more detailed output (n): `y` or `n`')
 
 def CheckIfErrLogExists(input_dir):
-    """Method to check whether .csh.e files exists.
+    """Method to check whether stderr files exists.
 
     """
+    # First need to check whether naf or lxplus were used
+
     if len(glob.glob(input_dir + "*.csh.e*")) == 0:
         raise EnvironmentError('No .csh.e files in ' + input_dir + '.')
 
