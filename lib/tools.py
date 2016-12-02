@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+import socket
+
 """Module with usefull tools
 
 """
@@ -27,3 +29,11 @@ def MakeCleanDir(path_to_dir):
 def MakeFileExecutable(path_to_file):
     st = os.stat(path_to_file)
     os.chmod(path_to_file, st.st_mode | stat.S_IEXEC)
+
+def GetServerName():
+    hostname = socket.gethostname()
+    if 'lxplus' in hostname:
+        return 'lxplus'
+    elif 'naf' in hostname:
+        return 'naf'
+    else return 'shell'

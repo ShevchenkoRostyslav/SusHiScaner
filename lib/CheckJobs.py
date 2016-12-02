@@ -12,10 +12,33 @@ from printer import UserDecision
 __author__ = "Rostyslav Shevchenko"
 __email__ = "rostyslav.shevchenko@desy.de"
 
+def CheckBriefLog(input_dir):
+    """Method to check the overall status of the output.
+
+       This method shows the overall status of the output, in particular -
+       number of the points that was correctly processed (not zero output)
+       in comparison to the total number of submitted points.
+    """
+    total_not_empty_outs = 0
+    total_ins = 0
+    # Loop over all directories
+    for i_dir in glob.glob(input_dir + 'job*'):
+        # Add all *in files to get the total amount of in files
+        total_ins += len(glob.glob(i_dir + '/*.in')) - 1
+        for i_out in glob.glob(i_dir + '/*.out'):
+            # Get number of outputs
+            if '2HDMC' not in i_out and os.stat(i_out).st_size != 0:
+                total_not_empty_outs += 1
+    # Print the log message
+    print('Number of .in files: ' + str(total_ins) + ', number of .out files: ' + str(total_not_empty_outs))
+    return UserDecision('Continue without this files (y) or see more detailed output (n): `y` or `n`')
+
 def CheckIfErrLogExists(input_dir):
-    """Method to check whether .csh.e files exists.
+    """Method to check whether stderr files exists.
 
     """
+    # First need to check whether naf or lxplus were used
+
     if len(glob.glob(input_dir + "*.csh.e*")) == 0:
         raise EnvironmentError('No .csh.e files in ' + input_dir + '.')
 
@@ -33,11 +56,9 @@ def ShowBatchErrorLog(input_dir):
 
     """
     CheckIfErrLogExists(input_dir)
-    file_name = glob.glob(input_dir + '*.csh.e*')
-    # Check if it's not unique
-    if len(file_name) > 1:
-        raise AttributeError('More than one stderr log from batch at ' + input_dir)
-    with open(file_name[0], mode='r') as fin:
+    print('Show the newest one: ')
+    newest = max(glob.iglob('*.csh.e*'), key=os.path.getctime)
+    with open(newest, mode='r') as fin:
         print fin.read()
 
 def ShowSingleLog(input_file):
@@ -129,6 +150,8 @@ def CheckSubmissionOutput(input_dir):
     # Check if we are in correct folder
     if(len(glob.glob(input_dir + 'job*')) == 0):
         raise AttributeError('No job* folders in ' + input_dir)
+    # Make brief overview:
+    if CheckBriefLog(input_dir): return
     # Start loop over the DIRs with ouput of the SusHi
     for i_dir in glob.glob(input_dir + 'job*'):
         CheckSubmissionDir(i_dir + '/')
