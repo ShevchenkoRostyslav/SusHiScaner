@@ -57,3 +57,6 @@ LHAPDF_CONFIG=./lhapdf-config
 #Make:
 make
 make predef=2HDMC
+
+
+#Copy the link to sushi to the SushiScanner/bin folder
