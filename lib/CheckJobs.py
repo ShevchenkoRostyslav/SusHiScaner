@@ -31,16 +31,11 @@ def CheckBriefLog(input_dir):
                 total_not_empty_outs += 1
     # Print the log message
     print('Number of .in files: ' + str(total_ins) + ', number of .out files: ' + str(total_not_empty_outs))
-    return UserDecision('Continue without this files (y) or see more detailed output (n): `y` or `n`')
-
-def CheckIfErrLogExists(input_dir):
-    """Method to check whether stderr files exists.
-
-    """
-    # First need to check whether naf or lxplus were used
-
-    if len(glob.glob(input_dir + "*.csh.e*")) == 0:
-        raise EnvironmentError('No .csh.e files in ' + input_dir + '.')
+    # Make decision:
+    if total_ins != total_not_empty_outs:
+        return UserDecision('Continue without this files (y) or see more detailed output (n): `y` or `n` ')
+    else:
+        return True
 
 def CheckIfDirExists(input_dir):
     """Method to check whether directory exists.
@@ -49,17 +44,6 @@ def CheckIfDirExists(input_dir):
     """
     if not os.path.exists(input_dir):
         raise AttributeError('Provided folder: ' + input_dir + ' doesn`t exist')
-
-
-def ShowBatchErrorLog(input_dir):
-    """Method to show batch job error log under .csh.e*.
-
-    """
-    CheckIfErrLogExists(input_dir)
-    print('Show the newest one: ')
-    newest = max(glob.iglob('*.csh.e*'), key=os.path.getctime)
-    with open(newest, mode='r') as fin:
-        print fin.read()
 
 def ShowSingleLog(input_file):
     """Method to show log of a particular file.
@@ -88,10 +72,8 @@ def CheckOutSize(input_dir):
     # Raise warning
     if number_of_failed_files == 0: return
     warnings.warn(str(number_of_failed_files) + ' output files from ' + str(len(glob.glob(input_dir + "*.out"))) + ' are empty')
-    # Show batch error log?
-    if UserDecision('Show Batch error log file? Please type `y` or `n`'): ShowBatchErrorLog(input_dir)
     # Ask whether user wants to delete this files and continue
-    if UserDecision('Continue without this files? Empty files will be deleted. Please type `y` or `n`'):
+    if UserDecision('Continue without this files? Empty files will be deleted. Please type `y` or `n` '):
         for out_file in glob.glob(input_dir + "*.out"):
             if os.stat(out_file).st_size == 0:
                 os.remove(out_file)
@@ -104,8 +86,7 @@ def CheckNoutEqualToNin(input_dir):
     """
     if len(glob.glob(input_dir + "*.out")) != (len(glob.glob(input_dir + "*.in")) - 1): # -1 for template_basis.in
         warnings.warn( str(len(glob.glob(input_dir + "*.out"))) + ' files were processed instead of ' + str(len(glob.glob(input_dir + "*.in")) - 1) + ' in ' + input_dir + '\n')
-        if UserDecision('Show Batch error log file? Please type `y` or `n`'): ShowBatchErrorLog(input_dir)
-        if not UserDecision('Continue without this files? Please type `y` or `n`'):
+        if not UserDecision('Continue without this files? Please type `y` or `n` '):
             sys.exit()
         # TODO resubmission should be asked here as well!
 
@@ -145,6 +126,7 @@ def CheckSubmissionOutput(input_dir):
     """Main function to check submission output.
 
     """
+    print 'Check output...'
     # Check whether input_dir exists:
     CheckIfDirExists(input_dir)
     # Check if we are in correct folder

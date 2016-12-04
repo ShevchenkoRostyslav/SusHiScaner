@@ -37,9 +37,8 @@ class submitter(object):
         Used to submit jobs to naf/lxplus/shell use private methods that
         are overwritten in the derived classes
         """
-        #check whether output exists:
-        if not os.path.exists(cmd_args.output_dir):
-            os.makedirs(cmd_args.output_dir)
+        # Make clean directory
+        MakeCleanDir(cmd_args.output_dir)
         os.chdir(cmd_args.output_dir)
 
         # Count number of processed points:
@@ -55,15 +54,9 @@ class submitter(object):
             if( self._StartNewJob(points+1, cmd_args.pointsPerJob) or points == len(basis_arr) - 1):
                 # Tar the ini files:
                 self._TarIniFiles(job)
-                # Delete output of the 2HDMC
-                command3 = 'rm 2HDMC.out'
-                out_csh.write(command3 + '\n')
-                # Tar the output
-                tar_output = 'tar czf ../out_' + str(job) + '.tgz *.out *.log'
-                out_csh.write(tar_output + '\n')
-                # Copy results
-                copy_res = 'cd ../; cp out_' + str(job) + '.tgz ' + cmd_args.output_dir + 'job_' + + str(job) + '/.'
-                out_csh.write(copy_res + '\n')
+                # Tar the output files:
+                self._TarOutFiles(out_csh,job,cmd_args.output_dir)
+                # Submit current job
                 self.SubmitJob('job_' + str(job))
                 out_csh.close()
 
@@ -90,23 +83,20 @@ class submitter(object):
         #prepare new csh file to run at the farm
         newCsh = 'job_'+str(job)+'.csh'
         outCsh = open(newCsh, 'w')
-        outCsh.write('#!/bin/csh' + '\n')
+        self._UpdateCshFile(outCsh, '#!/bin/csh')
         # Work with tars:
-        # Copy tar
-        copy_tar = 'cp ' + root_dir + '/in_' + str(job) + '.tgz .'
-        outCsh.write(copy_tar + '\n')
-        # Untar
-        untar = 'tar zxvf in_' + str(job) + '.tgz'
-        outCsh.write(untar + '\n')
-        # chdir
-        outCsh.write('cd job_' + str(job) + '\n')
+        # Block if run is not local:
+        if '-cwd' not in self._parameters:
+            # Copy tar
+            self._UpdateCshFile(outCsh,'cp ' + root_dir + '/in_' + str(job) + '.tgz .')
+            # Untar
+            self._UpdateCshFile(outCsh,'tar zxvf in_' + str(job) + '.tgz')
+            # chdir
+            self._UpdateCshFile(outCsh,'cd job_' + str(job))
+        # clean dir
+        self._UpdateCshFile(outCsh,'rm *.out *.log')
         # Add permissions to the .csh file
         MakeFileExecutable(newCsh)
-
-        # job_dir = os.getcwd()
-        # command1 = 'cd ' + job_dir
-        # outCsh.write(command1 + "\n")
-        # Get back to the parent directory:
         os.chdir(root_dir)
 
         return outCsh
@@ -123,15 +113,9 @@ class submitter(object):
         # Check whether csh script exists:
         if not os.path.exists(out_csh.name):
             raise AttributeError("ERROR: No .csh file found at " + os.getcwd())
-        command = './sushi ' + card_name + '.in ' + card_name + '.out' + ' > ' + card_name + '.log'
-        out_csh.write(command + '\n')
+        self._UpdateCshFile(out_csh, './sushi ' + card_name + '.in ' + card_name + '.out' + ' > ' + card_name + '.log')
         # Cat 2HDMC output in the same .out
-        command2 = 'cat 2HDMC.out >> ' + card_name + '.out'
-        out_csh.write(command2 + '\n')
-        # Delete output of the 2HDMC:
-        # command3 = 'rm 2HDMC.out'
-        # out_csh.write(command3 + '\n')
-        # Get back to the parent directory:
+        self._UpdateCshFile(out_csh,'cat 2HDMC.out >> ' + card_name + '.out')
         os.chdir(root_dir)
 
     def _StartNewJob(self,points, pointsPerJob):
@@ -211,14 +195,34 @@ class submitter(object):
         temp_name = ''
         return temp_name
 
+    def _UpdateCshFile(self,csh_file,what):
+        """Method to update .csh file.
+
+        """
+        csh_file.write(str(what)+'\n')
+
     def _TarIniFiles(self,job):
         """Method to tar ini files.
 
         """
         call('tar czf in_' + str(job) + '.tgz job_' + str(job) + '/*.in job_' + str(job) + '/sushi',shell=True)
 
+    def _TarOutFiles(self,out_csh,job,output_dir):
+        """Method to tar out files.
+
+        """
+        # Delete output of the 2HDMC
+        self._UpdateCshFile(out_csh,'rm 2HDMC.out')
+        # Tar the output
+        self._UpdateCshFile(out_csh,'tar czf out_' + str(job) + '.tgz *.out *.log')
+        # Copy results
+        if not '-cwd' in self._parameters:
+            self._UpdateCshFile(out_csh,'mv out_' + str(job) + '.tgz ' + output_dir + 'job_' + str(job) + '/.')
+        # clean *in files
+        self._UpdateCshFile(out_csh, 'rm ' + output_dir + 'in_' + str(job) + '.tgz')
+
 class naf(submitter):
-    def __init__(self,parameters = "-cwd -V"):
+    def __init__(self,parameters = " -V"):
         submitter.__init__(self,'naf',"qsub",parameters)
         self._parameters = parameters
 
