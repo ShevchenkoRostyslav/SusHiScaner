@@ -1,7 +1,7 @@
 #SusHiScaner
 Author:     "Rostyslav Shevchenko"
 
-Credits:    "Hualin Mei and Stefano Lacaprara"
+Credits:    "Hualin Mei"
 
 Version:    "1.0.0"
 
@@ -13,9 +13,9 @@ Email:      "rostyslav.shevchenko@desy.de"
 
 Status:     "Beta-test"
 
-SusHiScaner is designed for comfortable reading and processing of SusHi and
-2HDMC output and converting it to the human readable format - .txt and
-analysis-usage format - .root
+SusHiScaner is designed for comfortable reading and processing of SusHi, interfaced
+with 2HDMC, output and converting it to the human readable format - .txt and
+analysis-usage format - .root.
 
 ##Pre-request
 
