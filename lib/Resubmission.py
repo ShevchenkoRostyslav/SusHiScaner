@@ -10,6 +10,15 @@ import submitter
 __author__ = "Rostyslav Shevchenko"
 __email__ = "rostyslav.shevchenko@desy.de"
 
+def Resubmit(cmd_arguments):
+    """Method to resubmit particular job.
+
+    """
+    proc = submitter.choose_cluster(cmd_args.submitter,cmd_args.submission_pars)
+    # Check if resubmission shoudl be done:
+    Resubmit(cmd_args.JobDirToResubmit,proc)
+    sys.exit('Resubmission was done')
+
 def Resubmit(job_dir,submitter):
     """Main method to resubmit particular job.
 
