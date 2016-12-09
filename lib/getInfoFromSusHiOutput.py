@@ -11,6 +11,8 @@ from makeRootFromTxt import *
 from tools import *
 from ROOT import TTree,TFile
 import re # for grep in the file
+from printer import printProgress
+import tarfile
 
 __author__ = "Rostyslav Shevchenko"
 __credits__ = ["Hualin Mei"]
@@ -155,7 +157,7 @@ def getInfoFromSusHiOutput(input_dir,output_dir,type2HDM,higgs):
     fileNames = type2HDM + '_m' + higgs
     tmpTxt   = output_dir + '/txtFiles/' + fileNames + '.txt'
     out_txt_f = open(tmpTxt, 'w')
-    # Get starting time to estimate the total time:
+    # Get starting time:
     start_time = time.time()
     # Create TTree
     tfile = MakeTFile(output_dir + '/rootFiles/' + fileNames + '.root')
@@ -171,8 +173,12 @@ def getInfoFromSusHiOutput(input_dir,output_dir,type2HDM,higgs):
     keys = ' '.join(_keys_scan + _keys_sushi + _keys_2hdmc)
     # Write keys to the file:
     out_txt_f.write(keys + '\n')
+    # Add progress bar:
+    i = 0
+    input_dirs = glob.glob(input_dir + 'job*')
+    printProgress(i, len(input_dirs))
     # Start loop over the DIRs with ouput of the SusHi
-    for dir in glob.glob(input_dir + 'job*'):
+    for dir in input_dirs:
         # Start loop over the FILEs in the DIR
         for file in glob.glob(dir + '/*out'):
             # Check whether this file contains specified 2hdm type and higgs boson
@@ -185,15 +191,21 @@ def getInfoFromSusHiOutput(input_dir,output_dir,type2HDM,higgs):
             line = GetLineWithOutput(file_string,dictHiggs,dict_scan,tree)
             # Save the output
             out_txt_f.write(line + '\n')
-            # Close file:
-            file_string.Close()
+            create_root_file = True
+        # Update Progress bar:
+        time.sleep(0.1)
+        i += 1
+        printProgress(i, len(input_dirs))
     # Close .txt file:
-    out_txt_f.Close()
+    out_txt_f.close()
     # Write and Close root file:
     tfile.Write()
     tfile.Close()
     # Hardcoded soultion to remove root file if it's empty
-    if not create_root_file: os.remove(output_dir + '/rootFiles/' + fileNames + '.root')#call('rm ' + output_dir + '/rootFiles/' + fileNames + '.root',shell=True)
+    if not create_root_file:
+        os.remove(output_dir + '/rootFiles/' + fileNames + '.root')
+        os.remove(output_dir + '/txtFiles/' + fileNames + '.txt')
+    print fileNames + ' DONE'
     print("--- %s seconds ---" % (time.time() - start_time))
 
 def makeReadableGrid(output_dir):
@@ -201,10 +213,8 @@ def makeReadableGrid(output_dir):
 
     """
     # higgsType and 2HDM types
-    # higgsType = ['A', 'h', 'H', 'extra']
-    # types2HDM = ['type1', 'type2','type3','type4']
-    higgsType = ['A']
-    types2HDM = ['type3']
+    higgsType = ['A', 'h', 'H']
+    types2HDM = ['type3','type4']
     # create directory for txt files:
     txtDir = MakeCleanDir(output_dir + '/txtFiles/')
     # and for root files
@@ -212,3 +222,29 @@ def makeReadableGrid(output_dir):
     for higgs in higgsType:
         for type2HDM in types2HDM:
             getInfoFromSusHiOutput(output_dir + '/sushi_out/',output_dir,type2HDM,higgs)
+
+def untarSusHiOutput(output_dir):
+    """Method to untar SusHi output.
+
+    """
+    # Check whether directory exists
+    if not os.path.exists(output_dir):
+        raise AttributeError("ERROR: Wrong dir name " + output_dir + " was provided to tools::untarSusHiOutput")
+    # Check the output_dir
+    if len(glob.glob(output_dir + 'sushi_out/job_*')) == 0:
+        raise AttributeError("ERROR: Wrong dir name " + output_dir + " was provided to tools::untarSusHiOutput")
+    # Iterate through the job_i folders from SusHi output
+    for job in glob.glob(output_dir + 'sushi_out/job_*'):
+        # use only the name of the folder
+        job_i = os.path.basename(os.path.normpath(job))
+        # extract job_id:
+        regex = re.compile(r'\d+')
+        job_id = regex.search(job_i).group(0)
+        # tar name
+        tar_names = glob.glob(job + '/out_' + job_id + '.*gz*')# + '.tgz'
+        if len(tar_names) == 0:
+            raise AttributeError("ERROR: No .tgz file at " + job + '/out_' + job_id + '.*gz*')
+        # Untar
+        tar = tarfile.open(tar_names[0])
+        tar.extractall(job)
+        tar.close()

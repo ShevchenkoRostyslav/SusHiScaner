@@ -90,10 +90,12 @@ def ParseOption():
     parser_naf.add_argument('--submission_pars', dest='submission_pars',type=str,help='Parameters that will be used with bsub',default='-cwd -V -l h_rt=24:00:00 -l h_vmem=4G')
 
     args = parser.parse_args()
+    # If not naf or lxplus
+    args.submission_pars = ''
     # convert output_dir to absolute path
     args.output_dir = os.path.abspath(os.path.join(os.getcwd(), args.output_dir))
     # convert dir for resubmission to absolute path if specified
-    if not args.JobDirToResubmit == None:
+    if 'JobDirToResubmit' in args and not args.JobDirToResubmit == None:
         args.JobDirToResubmit = os.path.abspath(os.path.join(os.getcwd(), args.JobDirToResubmit)) + '/'
     # Add folder to the output
     args.output_dir += '/sushi_out/'
