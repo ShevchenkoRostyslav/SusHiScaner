@@ -5,14 +5,11 @@
 '''
 
 import sys, os, commands
-import logging
 from subprocess import call,Popen
 import uuid
 from tools import *
-from shutil import copyfile
-import fileinput
 
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__)) + '/../' # full path of ROOT folder
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__)) + '/../' # full path to ROOT folder
 
 
 class submitter(object):
@@ -27,7 +24,7 @@ class submitter(object):
         elif type == 'lxplus':
             return lxplus(parameters)
         elif type == 'shell':
-            return shell(parameters)
+            return shell()
         assert 0, 'Wrong cluster selected: ' + type
     choose_cluster = staticmethod(choose_cluster)
 
@@ -143,12 +140,6 @@ class submitter(object):
         # Get back to the parent directory:
         os.chdir(root_dir)
 
-    # def SubmitJob(self, job=10000000):
-    #     """Method to submit single job by job_id.
-    #
-    #     """
-    #     self.SubmitJob('job_' + str(job))
-
     def processCmd(cmd, quite = 0):
         """Method to process cmd command for submission.
 
@@ -189,11 +180,80 @@ class submitter(object):
         call('cp ' + oldLoc + oldName + ' ' + newLoc + newName, shell=True)
 
     def _UpdateDataCard(self,basis):
-        """Methods to update the datacard with current configuration with basis.
+        """Methods to update the datacard with current configuration according to basis.
 
         """
-        temp_name = ''
+        if basis.basis == 'physicalbasis':
+            temp_name = self._UpdatePhysicalbasisDataCard(basis)
+        elif basis.basis == 'lambdabasis':
+            temp_name = self._UpdateLambdabasisDataCard(basis)
         return temp_name
+
+    def _UpdatePhysicalbasisDataCard(self,basis):
+        """Methods to update the datacard with current configuration with physical basis.
+
+        """
+        # Input data card
+        name = '2HDMC_physicalbasis'
+        templateInput = name + '.in'
+
+        # Redefine the name of the input datacard and output
+        tempInputName = 'type' + str(int(basis.thdmType)) + '_Htype_' + str(int(basis.higgsType)) + '_' + str(object=uuid.uuid1()) #Couldn't use meaningfull name because of limitation on the string size fomr sushi side
+        tempInput = tempInputName + '.in';
+
+        # Check whether input datacard exists:
+        if not os.path.exists(templateInput): raise BaseException('ERROR:PROBLEM in submitter::_UpdatePhysicalbasisDataCard - wrong dir')
+
+        # Copy initial.in file to new name and replace strings line-by-line
+        with open(templateInput) as infile, open(tempInput, 'w') as outfile:
+            for line in infile:
+                line = line.replace('HLOWM', str(basis.mh))
+                line = line.replace('HCAPM', str(basis.mH))
+                line = line.replace('HAMASS', str(basis.mA))
+                line = line.replace('HCMASS', str(basis.mC))
+                line = line.replace('SINB_A', str(basis.sinB_A))
+                line = line.replace('L6', str(basis.lambda6))
+                line = line.replace('L7', str(basis.lambda7))
+                line = line.replace('THDMTYPE', str(basis.thdmType))
+                line = line.replace('HIGGSTYPE', str(basis.higgsType))
+                line = line.replace('TANBETA', str(basis.tanBeta))
+                line = line.replace('M12', str(basis.m12))
+                outfile.write(line)
+
+        return tempInputName
+
+    def _UpdateLambdabasisDataCard(self,basis):
+        """Methods to update the datacard with current configuration with lambda basis.
+
+        """
+        # Input data card
+        name = '2HDMC_lambdabasis'
+        templateInput = name + '.in'
+
+        # Redefine the name of the input datacard and output
+        tempInputName = 'type' + str(int(basis.thdmType)) + '_Htype_' + str(int(basis.higgsType)) + '_' + str(object=uuid.uuid1())
+        tempInput = tempInputName + '.in';
+
+        # Check whether input datacard exists:
+        if not os.path.exists(templateInput): raise BaseException('ERROR:PROBLEM in submitter::_UpdateLambdabasisDataCard - wrong dir')
+
+        # Copy initial.in file to new name and replace strings line-by-line
+        with open(templateInput) as infile, open(tempInput, 'w') as outfile:
+            for line in infile:
+                line = line.replace('L1', str(basis.lambda1))
+                line = line.replace('L2', str(basis.lambda2))
+                line = line.replace('L3', str(basis.lambda3))
+                line = line.replace('L4', str(basis.lambda4))
+                line = line.replace('L5', str(basis.lambda5))
+                line = line.replace('L6', str(basis.lambda6))
+                line = line.replace('L7', str(basis.lambda7))
+                line = line.replace('THDMTYPE', str(basis.thdmType))
+                line = line.replace('HIGGSTYPE', str(basis.higgsType))
+                line = line.replace('TANBETA', str(basis.tanBeta))
+                line = line.replace('M12', str(basis.m12))
+                outfile.write(line)
+
+        return tempInputName
 
     def _UpdateCshFile(self,csh_file,what):
         """Method to update .csh file.
@@ -229,41 +289,6 @@ class naf(submitter):
     def __str__(self):
         return 'Naf: ' + self._command + self._parameters
 
-
-    def _UpdateDataCard(self,basis):
-        """Methods to update the datacard with current configuration with physical basis.
-
-        """
-        # Input data card
-        name = '2HDMC_physicalbasis'
-        templateInput = name + '.in'
-
-        # Redefine the name of the input datacard and output
-        tempInputName = 'type' + str(int(basis.thdmType)) + '_Htype_' + str(int(basis.higgsType)) + '_' + str(object=uuid.uuid1()) #Couldn't use meaningfull name because of limitation on the string size fomr sushi side
-        tempInput = tempInputName + '.in';
-
-        # Check whether input datacard exists:
-        if not os.path.exists(templateInput): raise BaseException('ERROR:PROBLEM in submitter::_UpdatePhysicalbasisDataCard - wrong dir')
-
-        # Copy initial.in file to new name and replace strings line-by-line
-        with open(templateInput) as infile, open(tempInput, 'w') as outfile:
-            for line in infile:
-                line = line.replace('HLOWM', str(basis.mh))
-                line = line.replace('HCAPM', str(basis.mH))
-                line = line.replace('HAMASS', str(basis.mA))
-                line = line.replace('HCMASS', str(basis.mC))
-                line = line.replace('SINB_A', str(basis.sinB_A))
-                line = line.replace('L6', str(basis.lambda6))
-                line = line.replace('L7', str(basis.lambda7))
-                line = line.replace('THDMTYPE', str(basis.thdmType))
-                line = line.replace('HIGGSTYPE', str(basis.higgsType))
-                line = line.replace('TANBETA', str(basis.tanBeta))
-                line = line.replace('M12', str(basis.m12))
-                outfile.write(line)
-
-        return tempInputName
-
-
 class lxplus(submitter):
     def __init__(self,parameters = "-cwd -V"):
         # TODO: test lxplus version!!!!!
@@ -272,39 +297,6 @@ class lxplus(submitter):
 
     def __str__(self):
         return 'lxplus used for submission'
-
-    def _UpdateDataCard(self,basis):
-        """Methods to update the datacard with current configuration with lambda basis.
-
-        """
-        # Input data card
-        name = '2HDMC_lambdabasis'
-        templateInput = name + '.in'
-
-        # Redefine the name of the input datacard and output
-        tempInputName = 'type' + str(int(basis.thdmType)) + '_Htype_' + str(int(basis.higgsType)) + '_' + str(object=uuid.uuid1())
-        tempInput = tempInputName + '.in';
-
-        # Check whether input datacard exists:
-        if not os.path.exists(templateInput): raise BaseException('ERROR:PROBLEM in submitter::_UpdateLambdabasisDataCard - wrong dir')
-
-        # Copy initial.in file to new name and replace strings line-by-line
-        with open(templateInput) as infile, open(tempInput, 'w') as outfile:
-            for line in infile:
-                line = line.replace('L1', str(basis.lambda1))
-                line = line.replace('L2', str(basis.lambda2))
-                line = line.replace('L3', str(basis.lambda3))
-                line = line.replace('L4', str(basis.lambda4))
-                line = line.replace('L5', str(basis.lambda5))
-                line = line.replace('L6', str(basis.lambda6))
-                line = line.replace('L7', str(basis.lambda7))
-                line = line.replace('THDMTYPE', str(basis.thdmType))
-                line = line.replace('HIGGSTYPE', str(basis.higgsType))
-                line = line.replace('TANBETA', str(basis.tanBeta))
-                line = line.replace('M12', str(basis.m12))
-                outfile.write(line)
-
-        return tempInputName
 
 class shell(submitter):
     def __init__(self):
@@ -326,4 +318,6 @@ class shell(submitter):
         self.CopyFile(ROOT_DIR + 'datacards','.','2HDMC_' + str(basis_arr[0].basis) + '.in')
         # Modify datacard with current set of parameters
         card_name = self._UpdateDataCard(basis_arr[0])
-        #
+        #run sushi
+        command = './sushi ' + card_name + '.in ' + card_name + '.out' + ' > ' + card_name + '.log'
+        call(command,shell=True)
