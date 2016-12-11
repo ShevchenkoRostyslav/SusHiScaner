@@ -1,5 +1,18 @@
 #!/usr/bin/python
+"""Hardcoded library for SusHi tag vs val.
+
+Library written to put in line SusHi tag and value that it's dedicated
+to.
+For example:
+('xs_ggh', 'ggh XS in pb') - shows that value of 'xs_ggh' can be found in
+SusHi output file by tag = 'ggh XS in pb'
+"""
+
 import collections
+
+__author__ = "Rostyslav Shevchenko"
+__maintainer__ = "Rostyslav Shevchenko"
+__email__ = "rostyslav.shevchenko@desy.de"
 
 tuple_scan = (('tanBeta', 'tan(beta)'),
              ('sinB_A', 'sin(beta-alpha)'))
@@ -104,6 +117,7 @@ tuple_extra_2hdmc = (('br_H+sc', '4    -3'),
                     ('br_H+Wh', '24    25'),
                     ('br_H+WH', '24    35'))
 dict_extra_2hdmc = collections.OrderedDict(tuple_extra_2hdmc)
+
 
 dict_higgs = {'h':[dict_h_sushi, dict_h_2hdmc, '25', '35', 'xs11'],
               'H':[dict_H_sushi, dict_H_2hdmc, '35', '36', 'xs12'],

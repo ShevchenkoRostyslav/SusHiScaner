@@ -2,14 +2,19 @@
 # -*- coding: utf-8 -*-
 """Module to print messages.
 
+Module used to print submission statistics and progress bar.
 """
 
 import sys
 
 __author__ = "Rostyslav Shevchenko"
+__maintainer__ = "Rostyslav Shevchenko"
 __email__ = "rostyslav.shevchenko@desy.de"
 
 def UserDecision(message):
+    """Function to ask user for 'yes' or 'no'.
+    
+    """
     while True:
         continueSubmission = raw_input(message)
         if continueSubmission in ['n','y']: break
@@ -21,12 +26,18 @@ def UserDecision(message):
         return True
 
 def differentVals(vals,name,precision = 2):
+    """Function to find unique values in an array.
+
+    """
     unique = []
     for v in vals:
         if round(v.iput[name],precision) not in unique: unique.append(round(v.iput[name],precision))
     return unique
 
 def printInput(basis_ar,iput):
+    """Function to print SusHi submission statistics.
+
+    """
     print '====================INPUT===================='
     print 'Processor: ', iput.submitter
     # if iput.submitter == 'lxplus': print 'Queue: ', iput.queue
@@ -60,7 +71,8 @@ def printInput(basis_ar,iput):
     if not UserDecision('Continue to submit to' + iput.submitter + ' ? Type y or n:\n'): sys.exit()
 
 def printProgress (iteration, total, prefix = 'Progress', suffix = 'Complete', decimals = 1, barLength = 50):
-    """
+    """Function to create terminal progress bar.
+
     Call in a loop to create terminal progress bar
     @params:
         iteration   - Required  : current iteration (Int)

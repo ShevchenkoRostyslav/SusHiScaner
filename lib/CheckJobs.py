@@ -10,6 +10,7 @@ import warnings
 from printer import UserDecision
 
 __author__ = "Rostyslav Shevchenko"
+__maintainer__ = "Rostyslav Shevchenko"
 __email__ = "rostyslav.shevchenko@desy.de"
 
 def CheckBriefLog(input_dir):

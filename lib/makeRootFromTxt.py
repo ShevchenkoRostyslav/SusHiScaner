@@ -2,16 +2,14 @@
 """Make a .root file from .txt file with grid from SusHi output.
 
 """
-
-from ROOT import TTree,TFile
+import sys
+import ROOT
+ROOT.PyConfig.IgnoreCommandLineOptions = True
 from array import array
 
 __author__ = "Rostyslav Shevchenko"
-__credits__ = ["Hualin Mei", "Stefano Lacaprara"]
-__version__ = "1.0.0"
 __maintainer__ = "Rostyslav Shevchenko"
 __email__ = "rostyslav.shevchenko@desy.de"
-__status__ = "Production"
 
 def CreateTBranch(dictionary,tree):
     """Method to create TBranch for TTree from dictionary.
@@ -34,7 +32,7 @@ def MakeTTree(dict_scan,dict_sushi,dict_2hdmc):
     """Method to create TTree object accroding to input higgs type.
 
     """
-    tree = TTree('tree','2HDM parameter space')
+    tree = ROOT.TTree('tree','2HDM parameter space')
     # Assign a dic to this tree
     tree.vars = {}
     # Iterate over the Scan vars
@@ -46,5 +44,5 @@ def MakeTFile(name):
     """Method that creates the root file according to the name.
 
     """
-    file_root = TFile(name,'recreate')
+    file_root = ROOT.TFile(name,'recreate')
     return file_root

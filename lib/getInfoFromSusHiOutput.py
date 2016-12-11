@@ -9,17 +9,13 @@ from subprocess import Popen,PIPE,call
 from gridSaveOrder import *
 from makeRootFromTxt import *
 from tools import *
-from ROOT import TTree,TFile
 import re # for grep in the file
 from printer import printProgress
 import tarfile
 
 __author__ = "Rostyslav Shevchenko"
-__credits__ = ["Hualin Mei"]
-__version__ = "1.0.0"
 __maintainer__ = "Rostyslav Shevchenko"
 __email__ = "rostyslav.shevchenko@desy.de"
-__status__ = "Production"
 
 def ReplaceSpecChar(string):
     """Method to replace special characters in string.
@@ -33,6 +29,7 @@ def ReplaceSpecChar(string):
 
 def GetFromSushiOut(file_stream, tag):
     """Method to grep SusHi part of the output.
+
     Method to grep SusHi part of the output to get information
     about cross-sections and bosons masses
     grep is done using the tags defined in gridSaveOrder
@@ -52,6 +49,7 @@ def GetFromSushiOut(file_stream, tag):
 
 def GetBRFrom2HDMCOut(file_stream, init1, init2, id1, id2):
     """Method to grep 2HDMC part of the output.
+
     Method to grep 2HDMC part of the output to get information
     about cross-sectiopns and bosons masses
     work can be illustrated on the following example:
@@ -107,6 +105,7 @@ def GetBRFrom2HDMCOut(file_stream, init1, init2, id1, id2):
 
 def UseThisFile(fileName, type2hdm, higgs):
     """Method to decide whether current file should be used or not according to the 2hdm type and higgs boson type.
+
     """
 
     if not type2hdm in fileName: return False
@@ -119,6 +118,7 @@ def UseThisFile(fileName, type2hdm, higgs):
 
 def GetLineWithOutput(file_string,dictHiggs,dict_scan,tree):
     """Method that returnes single line with combined output from SusHi and 2HDMC.
+
     This method extract the list of numbers according to it position at SusHi / 2HDMC output
     Also - it fills the TTree created before with this list.
     """

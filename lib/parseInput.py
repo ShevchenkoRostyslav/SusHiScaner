@@ -1,14 +1,21 @@
 #!/usr/bin/python
+"""Module to parse user input.
+
+This module designed to process user input from command line and from setup.py
+"""
+
 import argparse
 import os, sys
-import logging
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from setup import *
-from printer import *
+from printer import printInput
 from tools import *
 
+__author__ = "Rostyslav Shevchenko"
+__maintainer__ = "Rostyslav Shevchenko"
+__email__ = "rostyslav.shevchenko@desy.de"
+
 def chooseInput(args):
-    logging.debug('I`m in parseInput::chooseInput')
     #Read input Basis from setInput file
     iput = setInputs()
     # Check whether it's not empty
@@ -38,11 +45,12 @@ def chooseInput(args):
     return oput
 
 def ParseOption():
+    """Method to get user cmd input.
 
-    parser = argparse.ArgumentParser(description='submit sushi+2hdmc to lxplus')
-    parser.add_argument('-name', dest='name', type=str, help='name of this job, include 2hdm type, submission date/queue')
-    parser.add_argument('-v',dest='verbose', help="verbosity level, default - WARNING",default='WARNING',choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'])
-    parser.add_argument('-i',dest='input_ini', type=str, help='input SusHi datacard (.ini)',default='datacards/2HDMC_physicalbasis.in')
+    """
+
+    parser = argparse.ArgumentParser(description='submit sushi+2hdmc job')
+#    parser.add_argument('-v',dest='verbose', help="verbosity level, default - WARNING",default='WARNING',choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'])
     parser.add_argument('-o,output_dir',dest='output_dir', type=str, help='output dir path',default='output')
     parser.add_argument('-r,resubmit',dest='resubmit',action='store_true',help='if specified - resubmission of job will be done')
 
@@ -103,7 +111,6 @@ def ParseOption():
     return args
 
 def pushInput(args):
-    logging.debug('I`m in parseInput::pushInput')
     #Choose inputs: cmd or setInput.py file
     input = chooseInput(args)
     # Use printer to show the input
