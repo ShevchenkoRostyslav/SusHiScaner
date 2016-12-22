@@ -202,9 +202,9 @@ def getInfoFromSusHiOutput(input_dir,output_dir,type2HDM,higgs):
     tfile.Write()
     tfile.Close()
     # Hardcoded soultion to remove root file if it's empty
-    if not create_root_file:
-        os.remove(output_dir + '/rootFiles/' + fileNames + '.root')
-        os.remove(output_dir + '/txtFiles/' + fileNames + '.txt')
+    # if not create_root_file:
+        # os.remove(output_dir + '/rootFiles/' + fileNames + '.root')
+        # os.remove(output_dir + '/txtFiles/' + fileNames + '.txt')
     print fileNames + ' DONE'
     print("--- %s seconds ---" % (time.time() - start_time))
 
@@ -213,8 +213,8 @@ def makeReadableGrid(output_dir):
 
     """
     # higgsType and 2HDM types
-    higgsType = ['A', 'h', 'H']
-    types2HDM = ['type3','type4']
+    higgsType = ['A', 'H'] #'h'
+    types2HDM = ['type1','type2','type3','type4']
     # create directory for txt files:
     txtDir = MakeCleanDir(output_dir + '/txtFiles/')
     # and for root files

@@ -31,6 +31,7 @@ def chooseInput(args):
                 'sinB_A':args.sinB_A,
                 'lambda6':args.lambda6, 'lambda7':args.lambda7}
         args.submitter = 'shell'
+        args.submission_pars = ''
         oput.append(Basis.choose_basis(dic))
     elif( args.submitter == 'lambdabasis'):
         dic = {'basis':args.submitter,
@@ -38,6 +39,7 @@ def chooseInput(args):
                 'lambda1':args.lambda1,'lambda2':args.lambda2,'lambda3':args.lambda3,'lambda4':args.lambda4,'lambda5':args.lambda5,
                 'lambda6':args.lambda6, 'lambda7':args.lambda7}
         args.submitter = 'shell'
+        args.submission_pars = ''
         oput.append(Basis.choose_basis(dic))
     else:
         oput = iput
@@ -98,8 +100,6 @@ def ParseOption():
     parser_naf.add_argument('--submission_pars', dest='submission_pars',type=str,help='Parameters that will be used with bsub',default='-cwd -V -l h_rt=24:00:00 -l h_vmem=4G')
 
     args = parser.parse_args()
-    # If not naf or lxplus
-    args.submission_pars = ''
     # convert output_dir to absolute path
     args.output_dir = os.path.abspath(os.path.join(os.getcwd(), args.output_dir))
     # convert dir for resubmission to absolute path if specified

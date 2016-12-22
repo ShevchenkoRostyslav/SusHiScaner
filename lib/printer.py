@@ -13,7 +13,7 @@ __email__ = "rostyslav.shevchenko@desy.de"
 
 def UserDecision(message):
     """Function to ask user for 'yes' or 'no'.
-    
+
     """
     while True:
         continueSubmission = raw_input(message)
@@ -68,7 +68,7 @@ def printInput(basis_ar,iput):
         print 'lambda6: ', differentVals(basis_ar, 'lambda6')
         print 'lambda7: ', differentVals(basis_ar, 'lambda7')
     # decide whether u want to continue or not
-    if not UserDecision('Continue to submit to' + iput.submitter + ' ? Type y or n:\n'): sys.exit()
+    if not UserDecision('Continue to submit to ' + iput.submitter + ' ? Type y or n:\n'): sys.exit()
 
 def printProgress (iteration, total, prefix = 'Progress', suffix = 'Complete', decimals = 1, barLength = 50):
     """Function to create terminal progress bar.

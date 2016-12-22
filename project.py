@@ -38,8 +38,8 @@ python project.py lxplus -h
                         Parameters that will be used with bsub
 
 To run SusHi job using shell:
-python project.py physicalbasis -р
-python project.py lambdabasis -р
+python project.py physicalbasis -h
+python project.py lambdabasis -h
 """
 
 import sys

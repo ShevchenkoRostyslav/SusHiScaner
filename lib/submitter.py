@@ -110,7 +110,7 @@ class submitter(object):
         # Check whether csh script exists:
         if not os.path.exists(out_csh.name):
             raise AttributeError("ERROR: No .csh file found at " + os.getcwd())
-        self._UpdateCshFile(out_csh, './sushi ' + card_name + '.in ' + card_name + '.out' + ' > ' + card_name + '.log')
+        self._UpdateCshFile(out_csh, './sushi ' + card_name + '.in ' + card_name + '.out') # + ' > ' + card_name + '.log') #TODO: don't froget to switch on this
         # Cat 2HDMC output in the same .out
         self._UpdateCshFile(out_csh,'cat 2HDMC.out >> ' + card_name + '.out')
         os.chdir(root_dir)
