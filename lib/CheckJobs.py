@@ -72,7 +72,7 @@ def CheckOutSize(input_dir):
             number_of_failed_files += 1
     # Raise warning
     if number_of_failed_files == 0: return
-    warnings.warn(str(number_of_failed_files) + ' output files from ' + str(len(glob.glob(input_dir + "*.out"))) + ' are empty')
+    warnings.warn('In ' + input_dir + ' ' + str(number_of_failed_files) + ' output files from ' + str(len(glob.glob(input_dir + "*.out"))) + ' are empty')
     # Ask whether user wants to delete this files and continue
     if UserDecision('Continue without this files? Empty files will be deleted. Please type `y` or `n` '):
         for out_file in glob.glob(input_dir + "*.out"):
