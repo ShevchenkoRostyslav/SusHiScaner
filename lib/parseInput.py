@@ -91,7 +91,7 @@ def ParseOption():
     parser_lxplus = subparsers.add_parser('lxplus',help='arguments to run jobs at lxplus')
     parser_lxplus.add_argument('--n', dest='pointsPerJob', type=int, help='Number of points per job', default=1)
     parser_lxplus.add_argument('-d,dir_to_resubmit',  dest='JobDirToResubmit',type=str, help='Job directory to resubmit',default=None)
-    parser_lxplus.add_argument('--submission_pars', dest='submission_pars',type=str,help='Parameters that will be used with bsub',default=None)
+    parser_lxplus.add_argument('--submission_pars', dest='submission_pars',type=str,help='Parameters that will be used with bsub',default='-cwd -V')
 
     #create parser to run jobs iniciated in setinput at naf machines
     parser_naf = subparsers.add_parser('naf',help='arguments to run jobs at naf')
