@@ -1,0 +1,11 @@
+# Unix submit description file
+
+executable              = $EXE_NAME$.csh
+log                     = $EXE_NAME$.log
+output                  = $EXE_NAME$.out
+error                   = $EXE_NAME$.err
+getenv                  = True
+environment             = "LD_LIBRARY_PATH_STORED=$LD_LIBRARY_PATH$"
+should_transfer_files   = Yes
+when_to_transfer_output = ON_EXIT
+queue
