@@ -25,6 +25,8 @@ class submitter(object):
             return lxplus(parameters)
         elif type == 'shell':
             return shell()
+        elif type == 'condor':
+            return condor(parameters)
         assert 0, 'Wrong cluster selected: ' + type
     choose_cluster = staticmethod(choose_cluster)
 
@@ -297,6 +299,68 @@ class lxplus(submitter):
 
     def __str__(self):
         return 'lxplus used for submission'
+
+class condor(submitter):
+    def __init__(self,parameters = "-V"):
+        submitter.__init__(self,'condor',"condor_submit",parameters)
+        self._parameters = parameters
+
+    def __str__(self):
+        return 'condor used for submission'
+
+    # Redefine submit file
+    def SubmitJob(self, job_dir):
+        """Method to submit single job by job_dir.
+
+        """
+        root_dir = os.getcwd()
+        # Get base_dir name:
+        base_dir_name = os.path.basename(os.path.relpath(job_dir))
+        # Change directory
+        os.chdir(job_dir)
+        thisCsh = base_dir_name + '.csh'
+        # create and modify condor submission file:
+        condor_sub_file_name = self._createSubmitionFile(root_dir,root_dir + "/" + job_dir,base_dir_name)
+        #self._modifySubmitionFile(condor_sub_file_name,base_dir_name)
+        # command to submit
+        cmd = self._command + ' ' + self._parameters + ' ' + condor_sub_file_name
+        # print 'cmd: ' + cmd
+        print(cmd)
+        proc = Popen(cmd,shell=True)
+        # Get back to the parent directory:
+        os.chdir(root_dir)
+
+    def _createSubmitionFile(self,root_dir,job_dir,job_name):
+        """Method to create .sub condor fileself.
+
+        """
+        # template file
+        temp_file_name = "condor_submit_template.sub"
+
+        # output submission file Name
+        out_sub = "condor_submit_" + job_name + ".sub"
+        #copy template file to the job directory
+        #self.CopyFile(root_dir + "/../../input/",job_dir,temp_file_name,out_sub)
+        with open(root_dir + "/../../input/" + temp_file_name,'r') as f_in:
+            with open(job_dir + '/' + out_sub,'w') as f_out:
+                for line in f_in:
+                    n_line = line.replace("$EXE_NAME$",job_name)
+                    if "$LD_LIBRARY_PATH$" in line :
+                        n_line = line.replace("$LD_LIBRARY_PATH$",os.getenv("LD_LIBRARY_PATH"))
+                    f_out.write(n_line)
+
+        return out_sub
+
+    def _modifySubmitionFile(self,file_name,job_name):
+        """Method to modify submission file according to parameters.
+
+        """
+        with open(file_name,'r') as f:
+            txt = f.read().replace("$EXE_NAME$",job_name)
+
+        with open(file_name,'w') as f:
+            f.write(txt)
+
 
 class shell(submitter):
     def __init__(self):
