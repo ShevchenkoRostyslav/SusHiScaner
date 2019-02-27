@@ -1,5 +1,8 @@
 # Unix submit description file
 
++RequestRuntime=60
+#RequestMemory = 600
+request_memory          = 10
 executable              = $EXE_NAME$.csh
 log                     = $EXE_NAME$.log
 output                  = $EXE_NAME$.out
