@@ -341,7 +341,7 @@ class condor(submitter):
         out_sub = "condor_submit_" + job_name + ".sub"
         #copy template file to the job directory
         #self.CopyFile(root_dir + "/../../input/",job_dir,temp_file_name,out_sub)
-        with open(root_dir + "/../../input/" + temp_file_name,'r') as f_in:
+        with open(ROOT_DIR + "/input/" + temp_file_name,'r') as f_in:
             with open(job_dir + '/' + out_sub,'w') as f_out:
                 for line in f_in:
                     n_line = line.replace("$EXE_NAME$",job_name)
