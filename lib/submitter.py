@@ -80,9 +80,10 @@ class submitter(object):
         self.CopyFile(ROOT_DIR + 'datacards','.','2HDMC_' + str(par_set.basis) + '.in')
 
         #prepare new csh file to run at the farm
-        newCsh = 'job_'+str(job)+'.csh'
+        newCsh = 'job_'+str(job)+'.sh'
         outCsh = open(newCsh, 'w')
-        self._UpdateCshFile(outCsh, '#!/bin/csh')
+        #self._UpdateCshFile(outCsh, '#!/bin/csh')
+        self._UpdateCshFile(outCsh, 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH_STORED')
         # Work with tars:
         # Block if run is not local:
         if '-cwd' not in self._parameters:
@@ -346,7 +347,8 @@ class condor(submitter):
                 for line in f_in:
                     n_line = line.replace("$EXE_NAME$",job_name)
                     if "$LD_LIBRARY_PATH$" in line :
-                        n_line = line.replace("$LD_LIBRARY_PATH$",os.getenv("LD_LIBRARY_PATH"))
+                        m_line = line.replace("$LD_LIBRARY_PATH$",os.getenv("LD_LIBRARY_PATH"))
+                        n_line = m_line.replace("$LHAPDF_DATA_PATH$",os.getenv("LHAPDF_DATA_PATH"))
                     f_out.write(n_line)
 
         return out_sub

@@ -43,6 +43,7 @@ python project.py lambdabasis -h
 """
 
 import sys
+from time import sleep
 from lib.parseInput import *
 from lib.submitter import *
 from lib.Resubmission import Resubmit
@@ -66,3 +67,4 @@ if __name__ == '__main__':
     proc = submitter.choose_cluster(cmd_args.submitter,cmd_args.submission_pars)
     # Start submitting the jobs
     proc.submit(cmd_args,in_args)
+    sleep(0.05)

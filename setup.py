@@ -51,35 +51,35 @@ def setInputs():
     logging.debug('I`m in setInput::setInput')
     #Physical basis
     # Types of 2HDM to be processed 1 / 2 / 3 / 4
-    thdmTypes = [1,2,3,4]
+    thdmTypes = [1,2]
     #Types of higgs bosons
     higgsTypes = [12,21]#h,H,A
     #tanBetas
-    tanBetaLowRange = [0.5,2]
-    tanBetaLowStep  = 0.05
+    tanBetaLowRange = [0.5,1]
+    tanBetaLowStep  = 0.5
     tanBetasLow = [ tanBetaLowRange[0]+tanBetaLowStep*i for i in range(int((tanBetaLowRange[1]-tanBetaLowRange[0])/tanBetaLowStep)) ]
-    tanBetaRange = [2.,100.]
+    tanBetaRange = [2.,2.5]
     tanBetaStep = 0.5
     tanBetas = [ tanBetaRange[0]+tanBetaStep*i for i in range(int((tanBetaRange[1]-tanBetaRange[0])/tanBetaStep+1)) ]
     tanBetas = tanBetasLow + tanBetas
     #H masses
-    mH_range = [150,1300]
+    mH_range = [400,450]
     mH_step = 50.
     #mH = [mH_range[0] + mH_step * i for i in range(int((mH_range[1] - mH_range[0])/mH_step + 1))]
-    mH = [200,250,300,350,400,500,600,700,800,900,1100,1300]
+    mH = [400,450,500]
     #h masses
     mh = [125.]
     #sin(beta - alpha)
     #use cos(beta-alpha)
-    cosB_A_Range = [0,1]
-    cosB_A_step = 0.005
+    cosB_A_Range = [0,0.5]
+    cosB_A_step = 0.5
     cosB_As = [cosB_A_Range[0] + cosB_A_step* i for i in range(int((cosB_A_Range[1] - cosB_A_Range[0])/cosB_A_step + 1))]
     sinB_As = TranslateCosB_To_sinA(cosB_As)
     # sinB_A_Range = [-1,1]
     # sinB_A_step = 0.002
     # sinB_As = [sinB_A_Range[0] + sinB_A_step* i for i in range(int((sinB_A_Range[1] - sinB_A_Range[0])/sinB_A_step + 1))]
     #A masses
-    mA = [200,250,300,350,400,500,600,700,800,900,1100,1300]
+    mA = [350,400,500]
     # mA = [300,350,400,500,600,700,800,900,1100,1300]
     #m12 Parameter
     m12 = []
