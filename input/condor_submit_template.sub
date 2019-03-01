@@ -5,7 +5,7 @@ executable              = $EXE_NAME$.sh
 #RequestMemory = 600
 #request_memory          = 10
 log                     = $EXE_NAME$.log
-output                  = $EXE_NAME$.out
+output                  = $EXE_NAME$.o
 error                   = $EXE_NAME$.err
 environment             = "LD_LIBRARY_PATH_STORED=$LD_LIBRARY_PATH$:$LHAPDF_DATA_PATH$"
 should_transfer_files   = Yes
