@@ -1,6 +1,9 @@
 # Unix submit description file
 getenv                  = True
 executable              = $EXE_NAME$.sh
+#RequestRuntime=60
+#RequestMemory = 600
+#request_memory          = 10
 log                     = $EXE_NAME$.log
 output                  = $EXE_NAME$.out
 error                   = $EXE_NAME$.err
