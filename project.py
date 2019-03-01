@@ -43,7 +43,6 @@ python project.py lambdabasis -h
 """
 
 import sys
-from time import sleep
 from lib.parseInput import *
 from lib.submitter import *
 from lib.Resubmission import Resubmit
