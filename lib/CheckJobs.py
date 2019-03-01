@@ -106,8 +106,8 @@ def CheckIfCshExists(job_dir):
     # Check whether right dir was provided:
     CheckIfDirExists(job_dir)
     # Check if .csh file is inside
-    file_name = job_dir + '/' + os.path.basename(os.path.relpath(job_dir)) + '.csh'
-    if not os.path.exists(file_name):
+    file_name = job_dir + '/' + os.path.basename(os.path.relpath(job_dir))
+    if not os.path.exists(file_name + '.csh') and not os.path.exists(file_name + '.sh'):
         raise AttributeError('Provided folder: ' + job_dir + ' doesn`t contain .csh file: ' + file_name)
 
 def CheckSubmissionDir(input_dir):
