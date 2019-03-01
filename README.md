@@ -59,6 +59,8 @@ Help menu:
 2. To produce .txt and .root file - postprocessor.py should be used:
 
     python postprocessor.py -h/--help
+    
+    e.g. python postprocessor.py -i output --check_output --untar_output
 
 ##Have fun
 
