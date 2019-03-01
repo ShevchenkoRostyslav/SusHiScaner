@@ -1,14 +1,13 @@
 # Unix submit description file
-
-+RequestRuntime=60
+getenv                  = True
+executable              = $EXE_NAME$.sh
+#RequestRuntime=60
 #RequestMemory = 600
-request_memory          = 10
-executable              = $EXE_NAME$.csh
+#request_memory          = 10
 log                     = $EXE_NAME$.log
 output                  = $EXE_NAME$.out
 error                   = $EXE_NAME$.err
-getenv                  = True
-environment             = "LD_LIBRARY_PATH_STORED=$LD_LIBRARY_PATH$"
+environment             = "LD_LIBRARY_PATH_STORED=$LD_LIBRARY_PATH$:$LHAPDF_DATA_PATH$"
 should_transfer_files   = Yes
 when_to_transfer_output = ON_EXIT
 queue
